@@ -1,6 +1,6 @@
 name: publish
 
-# Publishes the `@rarebit-one/voidbind-web` npm package to the GitHub Packages
+# Publishes the `@rarebit-one/void-which-binds-web` npm package to the GitHub Packages
 # npm registry (https://npm.pkg.github.com) for consumption by the Tizen `.wgt`
 # surfaces (allthing-tizen, heyarr-tizen) and browser web clients. Symmetric peer
 # of voidbind-kmp's publish.yml, but npm instead of Maven/Gradle.
