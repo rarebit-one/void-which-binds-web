@@ -2296,7 +2296,7 @@ var qrcode = function() {
     return qrcode;
 }));
 
-// --- ESM export for @rarebit-one/voidbind-web -------------------------------
+// --- ESM export for @rarebit-one/void-which-binds-web -------------------
 // The library above is the unmodified qrcode-generator (MIT, Kazuhiko Arase),
 // vendored verbatim (ADR-0001 self-hosted policy). This line makes its
 // module-scoped `qrcode` factory importable. The UMD tail is inert under ESM

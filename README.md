@@ -1,8 +1,8 @@
-# voidbind-web
+# void-which-binds-web
 
-`@rarebit-one/voidbind-web` — the **browser Voidbind web-login client**. A
+`@rarebit-one/void-which-binds-web` — the **browser Void-Which-Binds web-login client**. A
 dependency-light, framework-agnostic ESM module that lets a browser (or a Tizen
-`.wgt` webview) log in to a Voidbind relying party by showing a QR that an
+`.wgt` webview) log in to a Void-Which-Binds relying party by showing a QR that an
 enrolled device approves — no password, no third party.
 
 It is a tidy extraction of All Thing's hand-rolled `web/signin.html` +
@@ -10,18 +10,24 @@ It is a tidy extraction of All Thing's hand-rolled `web/signin.html` +
 `baseUrl` is injected, so allthing and heyarr brokers are both spoken with no
 per-RP code.
 
-## The Voidbind three-repo topology
+> **Renamed (ADR-0013 R1).** This package was `@rarebit-one/voidbind-web`, in the
+> repo `rarebit-one/voidbind-web` (the old URL redirects). R1 renames packaging
+> only and changes no runtime string: the `voidbind:login` QR scheme is gen1 wire
+> and stays until gen2, and the error messages and the QR's `aria-label` are
+> unchanged ([void-which-binds-go ADR-0013](https://github.com/rarebit-one/void-which-binds-go/blob/main/docs/adr/0013-gen2-rename-to-void-which-binds-and-re-genesis.md)).
+
+## The Void-Which-Binds three-repo topology
 
 | Repo | Language | Role |
 |------|----------|------|
-| [`voidbind-go`](https://github.com/rarebit-one/voidbind-go)  | Go     | **Server / wire contract** — the `weblogin.Broker`, the source of truth |
+| [`void-which-binds-go`](https://github.com/rarebit-one/void-which-binds-go)  | Go     | **Server / wire contract** — the `weblogin.Broker`, the source of truth |
 | [`voidbind-kmp`](https://github.com/rarebit-one/voidbind-kmp) | Kotlin | **Native authenticator** — the phone app that scans + approves |
-| **`voidbind-web`** (this repo) | JavaScript | **Browser/web client** — shows the QR, polls, holds the session token |
+| **`void-which-binds-web`** (this repo) | JavaScript | **Browser/web client** — shows the QR, polls, holds the session token |
 
-`voidbind-web` is the symmetric web peer of `voidbind-kmp`: where the KMP module
-lets native apps consume the Voidbind login over the wire, this module lets
+`void-which-binds-web` is the symmetric web peer of `voidbind-kmp`: where the KMP module
+lets native apps consume the Void-Which-Binds login over the wire, this module lets
 browsers and Tizen `.wgt` surfaces do the same. Keeping it in its own
-npm-publishable repo keeps `voidbind-go`'s Go CI clean and lets N consumer repos
+npm-publishable repo keeps `void-which-binds-go`'s Go CI clean and lets N consumer repos
 (allthing-tizen, heyarr-tizen, web clients) depend on one versioned package
 instead of re-implementing the flow.
 
@@ -30,7 +36,7 @@ instead of re-implementing the flow.
 1. The browser `POST`s `{baseUrl}/login`; the broker returns `{ id, qr }`, a login
    id and a `voidbind:login?rp=<origin>&id=<login-id>` QR payload.
 2. The page renders that as a QR. An enrolled device (the voidbind-kmp phone app,
-   or the `voidbind login-approve` CLI stand-in) scans and approves it.
+   or the `void-which-binds login-approve` CLI stand-in) scans and approves it.
 3. The browser polls `GET {baseUrl}/login/{id}` (`{ status, token?, user? }`,
    status `pending` | `approved` | `expired`; 404 once the login is unknown) until
    `status` becomes `approved`, which carries a short-lived **session token**.
@@ -42,7 +48,7 @@ instead of re-implementing the flow.
 
 Tizen scope is **QR-only** — no push (ADR-0009 push is not used here).
 
-### Number-matching (voidbind-go ADR-0006 v2, opt-in)
+### Number-matching (void-which-binds-go ADR-0006 v2, opt-in)
 
 Pass `numberMatch: true` and the client creates the login with
 `POST {baseUrl}/login?mode=number-match`. The broker's create response then also
@@ -76,7 +82,7 @@ From the GitHub Packages npm registry (scope `@rarebit-one`):
 ```
 
 ```
-npm install @rarebit-one/voidbind-web
+npm install @rarebit-one/void-which-binds-web
 ```
 
 > Note: publishing to GitHub Packages for this org is currently **HTTP 402
@@ -86,16 +92,16 @@ npm install @rarebit-one/voidbind-web
 ## Usage (a Tizen `.wgt` or web client)
 
 ```js
-import { signIn, authFetch, sseUrl } from '@rarebit-one/voidbind-web';
+import { signIn, authFetch, sseUrl } from '@rarebit-one/void-which-binds-web';
 
-const baseUrl = 'https://allthing.example';      // the RP's Voidbind broker
+const baseUrl = 'https://allthing.example';      // the RP's Void-Which-Binds broker
 const qrElement = document.getElementById('qr');  // any node with innerHTML
 
 // Full flow: POST /login -> render QR -> poll until the device approves.
 const { token, user } = await signIn({
   baseUrl,
   qrElement,
-  onStatus: (s) => console.log('voidbind:', s.phase),
+  onStatus: (s) => console.log('void-which-binds:', s.phase),
 });
 
 // Carry the session token on protected calls.
@@ -109,7 +115,7 @@ const live = new EventSource(sseUrl(baseUrl, '/api/live/flights', token));
 Need finer control? The orchestrator is just the sum of the exported parts:
 
 ```js
-import { startWebLogin, renderQr, pollUntilApproved } from '@rarebit-one/voidbind-web';
+import { startWebLogin, renderQr, pollUntilApproved } from '@rarebit-one/void-which-binds-web';
 
 const { loginId, qrPayload } = await startWebLogin({ baseUrl });
 renderQr(qrElement, qrPayload);

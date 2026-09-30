@@ -1,19 +1,20 @@
 {
-  "name": "@rarebit-one/voidbind-web",
+  "name": "@rarebit-one/void-which-binds-web",
   "version": "0.1.0",
-  "description": "Browser Voidbind web-login client — the JS half of the Voidbind three-repo topology (server=voidbind-go, native=voidbind-kmp, web=voidbind-web). Speaks the ADR-0006 weblogin.Broker QR-login contract; RP-agnostic, framework-free, consumed by Tizen .wgt and web clients.",
+  "description": "Browser Void-Which-Binds web-login client (formerly voidbind-web) — the JS half of the Void-Which-Binds three-repo topology (server=void-which-binds-go, native=voidbind-kmp, web=void-which-binds-web). Speaks the ADR-0006 weblogin.Broker QR-login contract; RP-agnostic, framework-free, consumed by Tizen .wgt and web clients.",
   "type": "module",
   "license": "AGPL-3.0-or-later",
   "author": "Rarebit One",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rarebit-one/voidbind-web.git"
+    "url": "git+https://github.com/rarebit-one/void-which-binds-web.git"
   },
-  "homepage": "https://github.com/rarebit-one/voidbind-web#readme",
+  "homepage": "https://github.com/rarebit-one/void-which-binds-web#readme",
   "bugs": {
-    "url": "https://github.com/rarebit-one/voidbind-web/issues"
+    "url": "https://github.com/rarebit-one/void-which-binds-web/issues"
   },
   "keywords": [
+    "void-which-binds",
     "voidbind",
     "authentication",
     "qr-login",

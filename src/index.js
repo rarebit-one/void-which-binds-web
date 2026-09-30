@@ -1,9 +1,9 @@
-// @rarebit-one/voidbind-web — the browser Voidbind web-login client.
+// @rarebit-one/void-which-binds-web — the browser Void-Which-Binds web-login client.
 //
 // A dependency-light, framework-agnostic ESM module that speaks the ADR-0006
 // `weblogin.Broker` wire contract: a browser starts a login, shows a
 // `voidbind:login?rp=<origin>&id=<login-id>` QR, an enrolled device (the
-// voidbind-kmp phone app, or the `voidbind login-approve` CLI stand-in) scans
+// voidbind-kmp phone app, or the `void-which-binds login-approve` CLI stand-in) scans
 // and approves, and the browser polls until it holds a short-lived session
 // token. The token is carried as `Authorization: Bearer <token>` on fetch and
 // as `?token=<token>` on the SSE/EventSource URL (which cannot set a header).
@@ -14,9 +14,9 @@
 // generalised for the two Tizen `.wgt` surfaces (allthing-tizen, heyarr-tizen)
 // and browser web clients.
 //
-// Wire contract (voidbind-go `weblogin/handler.go` — the source of truth):
+// Wire contract (void-which-binds-go `weblogin/handler.go` — the source of truth):
 //   POST {baseUrl}/login                   -> { id, qr }
-//   POST {baseUrl}/login?mode=number-match -> { id, qr, match_number }   (voidbind-go ADR-0006 v2)
+//   POST {baseUrl}/login?mode=number-match -> { id, qr, match_number }   (void-which-binds-go ADR-0006 v2)
 //   GET  {baseUrl}/login/{id}              -> { status: 'pending'|'approved'|'expired',
 //                                               token?, user? }   (404 once unknown)
 // On `approved` the response carries `token` (the session token) and `user`.
@@ -72,7 +72,7 @@ function delay(ms, signal) {
 
 // --- QR rendering -----------------------------------------------------------
 
-// Encode a Voidbind login payload as a scannable QR and return the SVG markup.
+// Encode a Void-Which-Binds login payload as a scannable QR and return the SVG markup.
 // Type 0 auto-picks the smallest version that fits; level 'M' tolerates ~15%
 // damage, ample for an on-screen code. The SVG is scalable (no fixed px) and
 // carries a white quiet zone so a phone camera reads it in either colour scheme.
@@ -139,7 +139,7 @@ export function sseUrl(baseUrl, path, token) {
 // Start a web login: POST {baseUrl}/login. Resolves with the login id and the
 // QR payload (the `voidbind:login?rp=&id=` tuple to render/scan).
 //
-// `numberMatch: true` requests a voidbind-go ADR-0006 v2 number-matching login
+// `numberMatch: true` requests a void-which-binds-go ADR-0006 v2 number-matching login
 // (`POST /login?mode=number-match`). The broker then also returns the true match
 // number, surfaced as `matchNumber` (an integer in [0, 100)): the caller MUST
 // display it on this screen, because the phone shows only a candidate set and
@@ -172,7 +172,7 @@ export async function pollUntilApproved({ baseUrl, loginId, signal, intervalMs =
     const body = await res.json();
     if (body.status === 'approved') return { token: body.token, user: body.user };
     if (body.status === 'expired') throw new Error('voidbind login expired');
-    // voidbind-go never sends 'denied' (a refused approval leaves the login
+    // void-which-binds-go never sends 'denied' (a refused approval leaves the login
     // pending until it expires), but failing fast on it is harmless should an RP
     // add one.
     if (body.status === 'denied') throw new Error('voidbind login denied');
@@ -188,7 +188,7 @@ export async function pollUntilApproved({ baseUrl, loginId, signal, intervalMs =
 // web client typically needs; the individual functions above are exposed for
 // finer control.
 //
-// `numberMatch: true` opts into voidbind-go ADR-0006 number-matching (see startWebLogin): the
+// `numberMatch: true` opts into void-which-binds-go ADR-0006 number-matching (see startWebLogin): the
 // 'awaiting-approval' update then carries `matchNumber`, which the UI must show
 // next to the QR.
 export async function signIn({ baseUrl, qrElement, numberMatch = false, signal, onStatus, intervalMs, fetchImpl } = {}) {

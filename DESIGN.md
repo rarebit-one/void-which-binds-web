@@ -1,16 +1,16 @@
-# DESIGN — voidbind-web
+# DESIGN — void-which-binds-web
 
 **Status:** Accepted · **Date:** 2026-08-31
 
-A short design record for the `@rarebit-one/voidbind-web` package: why it is its
+A short design record for the `@rarebit-one/void-which-binds-web` package: why it is its
 own repo, the wire contract it speaks, and its deliberately narrow scope.
 
 ## Why a separate repo
 
-`voidbind-web` is the **browser/web protocol-client** for Voidbind login, split
+`void-which-binds-web` is the **browser/web protocol-client** for Void-Which-Binds login, split
 out of All Thing's in-app `web/signin.html` + `web/app.js`. It gets its own repo
 for the same reasons `voidbind-kmp` (the native authenticator) is separate from
-`voidbind-go` (the server):
+`void-which-binds-go` (the server):
 
 - **Consumed by N repos.** The two Tizen `.wgt` surfaces (allthing-tizen,
   heyarr-tizen) and future browser web clients all need the identical
@@ -21,11 +21,11 @@ for the same reasons `voidbind-kmp` (the native authenticator) is separate from
   (`@rarebit-one` scope), so consumers `npm install` a pinned version rather than
   vendoring source.
 - **Symmetric peer of `voidbind-kmp`.** The topology is intentionally three
-  repos: `voidbind-go` (server + wire contract, the source of truth),
+  repos: `void-which-binds-go` (server + wire contract, the source of truth),
   `voidbind-kmp` (native authenticator — the device that approves), and
-  `voidbind-web` (the browser/web relying-party client). Each RP language surface
+  `void-which-binds-web` (the browser/web relying-party client). Each RP language surface
   is its own consumer library.
-- **Keeps `voidbind-go`'s CI clean.** A JS package with a Node test job doesn't
+- **Keeps `void-which-binds-go`'s CI clean.** A JS package with a Node test job doesn't
   belong in the Go module's build; separating it keeps each repo's CI single-stack
   (Go stays Go, this stays Node).
 
@@ -34,7 +34,7 @@ for the same reasons `voidbind-kmp` (the native authenticator) is separate from
 The module mirrors — does not invent — the `weblogin.Broker` HTTP contract from
 [allthing `docs/adr/0006-voidbind-web-login.md`](https://github.com/rarebit-one/allthing/blob/main/docs/adr/0006-voidbind-web-login.md),
 as exercised by allthing's `web/signin.html`. The wire shapes themselves are
-voidbind-go's `weblogin/handler.go` (`createResp`, `pollResp`), the source of truth:
+void-which-binds-go's `weblogin/handler.go` (`createResp`, `pollResp`), the source of truth:
 
 ```
 POST {baseUrl}/login                   -> { id, qr }
@@ -44,7 +44,7 @@ GET  {baseUrl}/login/{id}              -> { status: 'pending'|'approved'|'expire
 ```
 
 - `qr` is the `voidbind:login?rp=<origin>&id=<login-id>` payload the broker mints
-  (byte-identical to voidbind-go's `weblogin.EncodeLogin`); the client only
+  (byte-identical to void-which-binds-go's `weblogin.EncodeLogin`); the client only
   displays it — it never constructs the tuple.
 - On `approved`, the poll response carries the short-lived **session token** and
   the authenticated `user`.
@@ -57,7 +57,7 @@ GET  {baseUrl}/login/{id}              -> { status: 'pending'|'approved'|'expire
   its ChallengeTTL (ADR-0006) lapses, so the client polls until a terminal
   status rather than running a local timeout clock. The create response carries
   no expiry timestamp, so there is nothing to count down against.
-- **Number-matching (voidbind-go ADR-0006 v2) is opt-in** (`numberMatch: true`).
+- **Number-matching (void-which-binds-go ADR-0006 v2) is opt-in** (`numberMatch: true`).
   The create response's `match_number` is the true number. This module surfaces
   it as `matchNumber` for the caller to display, because this browser is the one
   screen the legitimate user is looking at. The phone receives only the
@@ -69,10 +69,10 @@ GET  {baseUrl}/login/{id}              -> { status: 'pending'|'approved'|'expire
 - allthing's `signin.html` uses the wire field names `id` and `qr`. This module
   keeps the wire names on the boundary but exposes them to callers as
   `loginId` / `qrPayload` (and `match_number` as `matchNumber`).
-- voidbind-go has no `denied` status: a failed approval (wrong number, unknown
+- void-which-binds-go has no `denied` status: a failed approval (wrong number, unknown
   device) leaves the login `pending` so the honest device can still approve, and
   only `expired` ends it. This module still treats a `status: 'denied'` as a
-  reject so a non-voidbind-go RP that adds one fails fast. Against voidbind-go
+  reject so a non-void-which-binds-go RP that adds one fails fast. Against void-which-binds-go
   that branch never fires.
 
 ## Scope
