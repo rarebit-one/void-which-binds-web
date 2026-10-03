@@ -1,0 +1,96 @@
+{
+  "name": "fetch-other-audience",
+  "description": "ADR-0019 vector 15: a proof made for another broker's origin is bad_fetch_proof at this one, for either key kind.",
+  "webauthn_rps": [
+    {
+      "rp_id": "broker.example",
+      "origins": [
+        "https://broker.example"
+      ]
+    }
+  ],
+  "keys": {
+    "M.D": {
+      "sign_seed": "45ce63fc45a3cbd3cb2ae191e8a75ff7cad8335604e1e3bf4a7445e5b6611fd5",
+      "id": "ed25519:9bd317735e6474cceb4aef2752ab33b9d21876e2b0f1382cf232c63c729a6dda"
+    },
+    "M.W": {
+      "p256_scalar": "e028391f0bf6e54d8bc4b75ad06d01869f7ae053361ac340498842c5360a0b06",
+      "id": "webauthn:es256:04c836c3b4e64ed0281123c5be4eb554b155044ae1b0ecc0342935e3c7fab73fc351c1ed5c89dc9c8ec2cb2de327923fe083fcbecb27c22b4b03b49de4792c9031"
+    }
+  },
+  "fetch_preimages": [
+    {
+      "label": "fp-other",
+      "audience": "https://other-broker.example",
+      "handle": "7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+      "nonce": "TVg7lprP7Jm6v0b3SBLCdm-Ovnm7WGln5IqsMnZJ7pA",
+      "preimage": "0000000000000022766f69642d77686963682d62696e64732f617070726f76616c2f66657463682f7631000000000000001c68747470733a2f2f6f746865722d62726f6b65722e6578616d706c650000000000000020ed57c4307c3a9f32bc64e7089e19d61763e44562aa16986a921052277bda61db00000000000000204d583b969acfec99babf46f74812c2766f8ebe79bb586967e48aac327649ee90",
+      "webauthn_challenge": "597fa39c870d3b0da08c7c964bafea3858d0162bfc6fab87f45ae2fb8bedc5a2"
+    }
+  ],
+  "mints": [
+    {
+      "label": "proof-other-ed25519",
+      "kind": "ed25519",
+      "signer": "M.D",
+      "body": "0000000000000022766f69642d77686963682d62696e64732f617070726f76616c2f66657463682f7631000000000000001c68747470733a2f2f6f746865722d62726f6b65722e6578616d706c650000000000000020ed57c4307c3a9f32bc64e7089e19d61763e44562aa16986a921052277bda61db00000000000000204d583b969acfec99babf46f74812c2766f8ebe79bb586967e48aac327649ee90",
+      "sig": "EIqlc06nVVhhyqcOe6hwjL5k79mPWH1Ms29evqs20snsthJxjE7oykmhXREvdB2g2YVppRRp3wgUVwduwIYDCQ"
+    },
+    {
+      "label": "proof-other-webauthn",
+      "kind": "webauthn",
+      "signer": "M.W",
+      "domain": "void-which-binds/approval/fetch/v1",
+      "body": "0000000000000022766f69642d77686963682d62696e64732f617070726f76616c2f66657463682f7631000000000000001c68747470733a2f2f6f746865722d62726f6b65722e6578616d706c650000000000000020ed57c4307c3a9f32bc64e7089e19d61763e44562aa16986a921052277bda61db00000000000000204d583b969acfec99babf46f74812c2766f8ebe79bb586967e48aac327649ee90",
+      "sig": "eyJhZCI6ImU1ZXpiTmQ3YzdpQ2lpejN3T29kanlMZXVpNWpzUG16M0lQSlc4UXJZTmtGQUFBQUFBIiwiY2QiOiJleUowZVhCbElqb2lkMlZpWVhWMGFHNHVaMlYwSWl3aVkyaGhiR3hsYm1kbElqb2lWMWd0YW01SlkwNVBkekpuYWtoNVYxTTJYM0ZQUm1wUlJtbDJPR0kyZFVnNVJuSnBMVFIyZEhoaFNTSXNJbTl5YVdkcGJpSTZJbWgwZEhCek9pOHZZbkp2YTJWeUxtVjRZVzF3YkdVaUxDSmpjbTl6YzA5eWFXZHBiaUk2Wm1Gc2MyVjkiLCJzaWciOiJNRVFDSUdRTmp1bXdWWHpjMzZHdHhJMkZNcG01LUp3MG1ObnN6OTlnbEtuY0pTZUVBaUE5WFdNekt0MGxzSHp6ZTVQaW1NUl9XbjBTNHpCY3ZhcTV0b2R3Znd4NEd3In0"
+    }
+  ],
+  "fetches": [
+    {
+      "label": "ed25519",
+      "request": {
+        "handle": "7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+        "nonce": "TVg7lprP7Jm6v0b3SBLCdm-Ovnm7WGln5IqsMnZJ7pA",
+        "credential": "credential-not-judged-at-the-byte-layer",
+        "proof": "EIqlc06nVVhhyqcOe6hwjL5k79mPWH1Ms29evqs20snsthJxjE7oykmhXREvdB2g2YVppRRp3wgUVwduwIYDCQ"
+      },
+      "audience": "https://broker.example",
+      "fetcher": "M.D",
+      "allow_synced": false,
+      "nonce_issued_at": 1791028810,
+      "now": 1791028820,
+      "expect": "bad_fetch_proof"
+    },
+    {
+      "label": "webauthn",
+      "request": {
+        "handle": "7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+        "nonce": "TVg7lprP7Jm6v0b3SBLCdm-Ovnm7WGln5IqsMnZJ7pA",
+        "credential": "credential-not-judged-at-the-byte-layer",
+        "proof": "eyJhZCI6ImU1ZXpiTmQ3YzdpQ2lpejN3T29kanlMZXVpNWpzUG16M0lQSlc4UXJZTmtGQUFBQUFBIiwiY2QiOiJleUowZVhCbElqb2lkMlZpWVhWMGFHNHVaMlYwSWl3aVkyaGhiR3hsYm1kbElqb2lWMWd0YW01SlkwNVBkekpuYWtoNVYxTTJYM0ZQUm1wUlJtbDJPR0kyZFVnNVJuSnBMVFIyZEhoaFNTSXNJbTl5YVdkcGJpSTZJbWgwZEhCek9pOHZZbkp2YTJWeUxtVjRZVzF3YkdVaUxDSmpjbTl6YzA5eWFXZHBiaUk2Wm1Gc2MyVjkiLCJzaWciOiJNRVFDSUdRTmp1bXdWWHpjMzZHdHhJMkZNcG01LUp3MG1ObnN6OTlnbEtuY0pTZUVBaUE5WFdNekt0MGxzSHp6ZTVQaW1NUl9XbjBTNHpCY3ZhcTV0b2R3Znd4NEd3In0"
+      },
+      "audience": "https://broker.example",
+      "fetcher": "M.W",
+      "allow_synced": false,
+      "nonce_issued_at": 1791028810,
+      "now": 1791028820,
+      "expect": "bad_fetch_proof"
+    },
+    {
+      "label": "at-other",
+      "request": {
+        "handle": "7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+        "nonce": "TVg7lprP7Jm6v0b3SBLCdm-Ovnm7WGln5IqsMnZJ7pA",
+        "credential": "credential-not-judged-at-the-byte-layer",
+        "proof": "EIqlc06nVVhhyqcOe6hwjL5k79mPWH1Ms29evqs20snsthJxjE7oykmhXREvdB2g2YVppRRp3wgUVwduwIYDCQ"
+      },
+      "audience": "https://other-broker.example",
+      "fetcher": "M.D",
+      "allow_synced": false,
+      "nonce_issued_at": 1791028810,
+      "now": 1791028820,
+      "expect": "ok"
+    }
+  ]
+}

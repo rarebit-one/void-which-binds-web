@@ -1,7 +1,7 @@
 {
   "name": "@rarebit-one/void-which-binds-web",
   "version": "0.1.0",
-  "description": "Browser Void-Which-Binds web-login client (formerly voidbind-web) — the JS half of the Void-Which-Binds three-repo topology (server=void-which-binds-go, native=voidbind-kmp, web=void-which-binds-web). Speaks the ADR-0006 weblogin.Broker QR-login contract; RP-agnostic, framework-free, consumed by Tizen .wgt and web clients.",
+  "description": "Browser Void-Which-Binds web-login client (formerly voidbind-web) — the JS half of the Void-Which-Binds three-repo topology (server=void-which-binds-go, native=voidbind-kmp, web=void-which-binds-web). Speaks the ADR-0006 weblogin.Broker QR-login contract, and (./webauthn) signs ADR-0017 delegations and ADR-0019 approvals with an ADR-0018 passkey; RP-agnostic, framework-free, consumed by Tizen .wgt and web clients.",
   "type": "module",
   "license": "AGPL-3.0-or-later",
   "author": "Rarebit One",
@@ -21,12 +21,15 @@
     "weblogin",
     "passwordless",
     "tizen",
+    "webauthn",
+    "passkey",
     "esm"
   ],
   "main": "./src/index.js",
   "module": "./src/index.js",
   "exports": {
     ".": "./src/index.js",
+    "./webauthn": "./src/webauthn/index.js",
     "./package.json": "./package.json"
   },
   "files": [
@@ -40,10 +43,15 @@
   },
   "sideEffects": false,
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "typecheck": "tsc -p tsconfig.json",
+    "check:vectors": "scripts/check-vector-drift.sh"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
     "access": "restricted"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2"
   }
 }

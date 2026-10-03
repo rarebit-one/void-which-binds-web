@@ -1,0 +1,20 @@
+{
+  "name": "spec-16.2-authentication",
+  "description": "the authentication half of WebAuthn L3 §16.2 (ES256 Credential with No Attestation), verbatim, verified against the spec's own challenge. Steps 10–16 pass on independent bytes, but the spec's flags are 0x19 (UP, BE, BS; UV clear), so ADR-0018's UV gate refuses it; signature_valid pins that steps 20–21 still verify",
+  "key": "webauthn:es256:04afefa16f97ca9b2d23eb86ccb64098d20db90856062eb249c33a9b672f26df61930a56b87a2fca66334b03458abf879717c12cc68ed73290af2e2664796b9220",
+  "challenge": "39c0e7521417ba54d43e8dc95174f423dee9bf3cd804ff6d65c857c9abf4d408",
+  "segment": "eyJhZCI6InY2dkRkREtWaXdZellOT3RaR0hKeEhOYTVfanQxR1dTcGVEd0ZGS3k1TFVaQUFBQUFBIiwiY2QiOiJleUowZVhCbElqb2lkMlZpWVhWMGFHNHVaMlYwSWl3aVkyaGhiR3hsYm1kbElqb2lUMk5FYmxWb1VWaDFiRlJWVUc4elNsVllWREJKT1Rkd2RucDZXVUpRT1hSYVkyaFllV0YyTURGQlp5SXNJbTl5YVdkcGJpSTZJbWgwZEhCek9pOHZaWGhoYlhCc1pTNXZjbWNpTENKamNtOXpjMDl5YVdkcGJpSTZabUZzYzJWOSIsInNpZyI6Ik1FWUNJUUQxQ2s0dVJBa2tuRXFGTzZOaEtDOEpoQjMwM1VWSG9UcUhlQUlZM3ZfTk9BSWhBSVNBckE4TGsxT0JkUFYxdnhHaDNWMTR4dVNHQVQtVGNwWHFFMlUtTXg2SCJ9",
+  "policy": {
+    "rps": [
+      {
+        "rp_id": "example.org",
+        "origins": [
+          "https://example.org"
+        ]
+      }
+    ],
+    "allow_synced": true
+  },
+  "expect": "user_not_verified",
+  "signature_valid": true
+}

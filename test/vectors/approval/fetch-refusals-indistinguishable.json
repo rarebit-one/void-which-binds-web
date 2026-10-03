@@ -1,0 +1,14 @@
+{
+  "name": "fetch-refusals-indistinguishable",
+  "description": "ADR-0019 vector 15: every fetch refusal is this status with exactly these body bytes, whatever reason the broker logs. G9b replays its broker's refusals against it.",
+  "keys": {
+    "M.D": {
+      "sign_seed": "45ce63fc45a3cbd3cb2ae191e8a75ff7cad8335604e1e3bf4a7445e5b6611fd5",
+      "id": "ed25519:9bd317735e6474cceb4aef2752ab33b9d21876e2b0f1382cf232c63c729a6dda"
+    }
+  },
+  "fetch_refusal": {
+    "status": 404,
+    "body": "{\"error\":\"not_found\"}"
+  }
+}

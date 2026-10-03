@@ -1,0 +1,151 @@
+{
+  "name": "refusals",
+  "description": "strings that are not a scope: every one is refused malformed (ADR-0017 vector 12), and none is normalised into a valid scope",
+  "cases": [
+    {
+      "scope": "",
+      "why": "empty",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app",
+      "why": "no colon",
+      "expect": "malformed"
+    },
+    {
+      "scope": ":read",
+      "why": "empty namespace",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app:",
+      "why": "empty path",
+      "expect": "malformed"
+    },
+    {
+      "scope": "APP:read",
+      "why": "uppercase namespace",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app:Read",
+      "why": "uppercase path",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app:*",
+      "why": "wildcard path",
+      "expect": "malformed"
+    },
+    {
+      "scope": "*:read",
+      "why": "wildcard namespace",
+      "expect": "malformed"
+    },
+    {
+      "scope": "do:team/*",
+      "why": "trailing wildcard",
+      "expect": "malformed"
+    },
+    {
+      "scope": "1app:read",
+      "why": "namespace starts with a digit",
+      "expect": "malformed"
+    },
+    {
+      "scope": "-app:read",
+      "why": "namespace starts with '-'",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app_x:read",
+      "why": "'_' in namespace",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app.x:read",
+      "why": "'.' in namespace",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app:-read",
+      "why": "path starts with '-'",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app:.read",
+      "why": "path starts with '.'",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app:/read",
+      "why": "path starts with '/'",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app:_read",
+      "why": "path starts with '_'",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app:re ad",
+      "why": "space in path",
+      "expect": "malformed"
+    },
+    {
+      "scope": " app:read",
+      "why": "leading space",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app:read ",
+      "why": "trailing space",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app:read\n",
+      "why": "trailing newline",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app:a:b",
+      "why": "second colon",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app:café",
+      "why": "non-ASCII path",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app:reаd",
+      "why": "Cyrillic homoglyph in path",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app:read\u0000",
+      "why": "NUL byte",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app:a+b",
+      "why": "'+' in path",
+      "expect": "malformed"
+    },
+    {
+      "scope": "app:a%2fb",
+      "why": "'%' in path",
+      "expect": "malformed"
+    },
+    {
+      "scope": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:p",
+      "why": "33-byte namespace",
+      "expect": "malformed"
+    },
+    {
+      "scope": "a:ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp",
+      "why": "129-byte path",
+      "expect": "malformed"
+    }
+  ]
+}

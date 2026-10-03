@@ -1,0 +1,305 @@
+{
+  "name": "lists",
+  "description": "scope lists (a delegation's scp, ADR-0017): a minter canonicalises (byte-order sort, de-duplicate, 1-32 entries); a verifier refuses anything not already canonical",
+  "cases": [
+    {
+      "why": "one scope",
+      "input": [
+        "app:read"
+      ],
+      "canonical": [
+        "app:read"
+      ],
+      "verify": "ok"
+    },
+    {
+      "why": "already canonical",
+      "input": [
+        "app:read",
+        "do:team/ops"
+      ],
+      "canonical": [
+        "app:read",
+        "do:team/ops"
+      ],
+      "verify": "ok"
+    },
+    {
+      "why": "unsorted: the minter sorts, the verifier refuses",
+      "input": [
+        "do:team/ops",
+        "app:read"
+      ],
+      "canonical": [
+        "app:read",
+        "do:team/ops"
+      ],
+      "verify": "malformed"
+    },
+    {
+      "why": "duplicate: the minter drops it, the verifier refuses",
+      "input": [
+        "app:read",
+        "app:read"
+      ],
+      "canonical": [
+        "app:read"
+      ],
+      "verify": "malformed"
+    },
+    {
+      "why": "byte order, not path order: '-' (0x2d) and '.' (0x2e) sort before '/' (0x2f)",
+      "input": [
+        "do:a/b",
+        "do:a.b",
+        "do:a-b"
+      ],
+      "canonical": [
+        "do:a-b",
+        "do:a.b",
+        "do:a/b"
+      ],
+      "verify": "malformed"
+    },
+    {
+      "why": "byte order: digits sort before letters",
+      "input": [
+        "app:b",
+        "app:9"
+      ],
+      "canonical": [
+        "app:9",
+        "app:b"
+      ],
+      "verify": "malformed"
+    },
+    {
+      "why": "a prefix sorts first",
+      "input": [
+        "do:team/ops",
+        "do:team/ops/deploy"
+      ],
+      "canonical": [
+        "do:team/ops",
+        "do:team/ops/deploy"
+      ],
+      "verify": "ok"
+    },
+    {
+      "why": "empty list",
+      "input": [],
+      "canonical": null,
+      "verify": "malformed"
+    },
+    {
+      "why": "an empty scope in the list",
+      "input": [
+        "",
+        "app:read"
+      ],
+      "canonical": null,
+      "verify": "malformed"
+    },
+    {
+      "why": "an uppercase scope in the list",
+      "input": [
+        "APP:read"
+      ],
+      "canonical": null,
+      "verify": "malformed"
+    },
+    {
+      "why": "a wildcard in the list",
+      "input": [
+        "app:*"
+      ],
+      "canonical": null,
+      "verify": "malformed"
+    },
+    {
+      "why": "exactly 32 scopes",
+      "input": [
+        "app:s00",
+        "app:s01",
+        "app:s02",
+        "app:s03",
+        "app:s04",
+        "app:s05",
+        "app:s06",
+        "app:s07",
+        "app:s08",
+        "app:s09",
+        "app:s10",
+        "app:s11",
+        "app:s12",
+        "app:s13",
+        "app:s14",
+        "app:s15",
+        "app:s16",
+        "app:s17",
+        "app:s18",
+        "app:s19",
+        "app:s20",
+        "app:s21",
+        "app:s22",
+        "app:s23",
+        "app:s24",
+        "app:s25",
+        "app:s26",
+        "app:s27",
+        "app:s28",
+        "app:s29",
+        "app:s30",
+        "app:s31"
+      ],
+      "canonical": [
+        "app:s00",
+        "app:s01",
+        "app:s02",
+        "app:s03",
+        "app:s04",
+        "app:s05",
+        "app:s06",
+        "app:s07",
+        "app:s08",
+        "app:s09",
+        "app:s10",
+        "app:s11",
+        "app:s12",
+        "app:s13",
+        "app:s14",
+        "app:s15",
+        "app:s16",
+        "app:s17",
+        "app:s18",
+        "app:s19",
+        "app:s20",
+        "app:s21",
+        "app:s22",
+        "app:s23",
+        "app:s24",
+        "app:s25",
+        "app:s26",
+        "app:s27",
+        "app:s28",
+        "app:s29",
+        "app:s30",
+        "app:s31"
+      ],
+      "verify": "ok"
+    },
+    {
+      "why": "33 scopes",
+      "input": [
+        "app:s00",
+        "app:s01",
+        "app:s02",
+        "app:s03",
+        "app:s04",
+        "app:s05",
+        "app:s06",
+        "app:s07",
+        "app:s08",
+        "app:s09",
+        "app:s10",
+        "app:s11",
+        "app:s12",
+        "app:s13",
+        "app:s14",
+        "app:s15",
+        "app:s16",
+        "app:s17",
+        "app:s18",
+        "app:s19",
+        "app:s20",
+        "app:s21",
+        "app:s22",
+        "app:s23",
+        "app:s24",
+        "app:s25",
+        "app:s26",
+        "app:s27",
+        "app:s28",
+        "app:s29",
+        "app:s30",
+        "app:s31",
+        "app:s32"
+      ],
+      "canonical": null,
+      "verify": "malformed"
+    },
+    {
+      "why": "33 entries but 32 distinct: the minter's bound is after de-duplication",
+      "input": [
+        "app:s00",
+        "app:s01",
+        "app:s02",
+        "app:s03",
+        "app:s04",
+        "app:s05",
+        "app:s06",
+        "app:s07",
+        "app:s08",
+        "app:s09",
+        "app:s10",
+        "app:s11",
+        "app:s12",
+        "app:s13",
+        "app:s14",
+        "app:s15",
+        "app:s16",
+        "app:s17",
+        "app:s18",
+        "app:s19",
+        "app:s20",
+        "app:s21",
+        "app:s22",
+        "app:s23",
+        "app:s24",
+        "app:s25",
+        "app:s26",
+        "app:s27",
+        "app:s28",
+        "app:s29",
+        "app:s30",
+        "app:s31",
+        "app:s00"
+      ],
+      "canonical": [
+        "app:s00",
+        "app:s01",
+        "app:s02",
+        "app:s03",
+        "app:s04",
+        "app:s05",
+        "app:s06",
+        "app:s07",
+        "app:s08",
+        "app:s09",
+        "app:s10",
+        "app:s11",
+        "app:s12",
+        "app:s13",
+        "app:s14",
+        "app:s15",
+        "app:s16",
+        "app:s17",
+        "app:s18",
+        "app:s19",
+        "app:s20",
+        "app:s21",
+        "app:s22",
+        "app:s23",
+        "app:s24",
+        "app:s25",
+        "app:s26",
+        "app:s27",
+        "app:s28",
+        "app:s29",
+        "app:s30",
+        "app:s31"
+      ],
+      "verify": "malformed"
+    }
+  ]
+}

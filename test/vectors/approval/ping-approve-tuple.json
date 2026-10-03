@@ -1,0 +1,61 @@
+{
+  "name": "ping-approve-tuple",
+  "description": "ADR-0019 vector 11: a fixed handle gives the exact tuple, which names no rp and no challenge; ParseApprove is an exact match and refuses every other spelling (unknown_handle).",
+  "keys": {
+    "M.D": {
+      "sign_seed": "45ce63fc45a3cbd3cb2ae191e8a75ff7cad8335604e1e3bf4a7445e5b6611fd5",
+      "id": "ed25519:9bd317735e6474cceb4aef2752ab33b9d21876e2b0f1382cf232c63c729a6dda"
+    }
+  },
+  "tuples": [
+    {
+      "handle": "7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+      "tuple": "void-which-binds:approve?h=7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+      "expect": "ok"
+    },
+    {
+      "tuple": "void-which-binds:approve?h=7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds=",
+      "expect": "unknown_handle"
+    },
+    {
+      "tuple": "void-which-binds:approve?h=7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds&rp=https://broker.example",
+      "expect": "unknown_handle"
+    },
+    {
+      "tuple": "void-which-binds:approve?rp=https://broker.example&h=7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+      "expect": "unknown_handle"
+    },
+    {
+      "tuple": "void-which-binds:approve?h=7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYd",
+      "expect": "unknown_handle"
+    },
+    {
+      "tuple": "VOID-WHICH-BINDS:approve?h=7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+      "expect": "unknown_handle"
+    },
+    {
+      "tuple": "void-which-binds:approve?h=7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds#x",
+      "expect": "unknown_handle"
+    },
+    {
+      "tuple": "void-which-binds:approve?h=%37VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+      "expect": "unknown_handle"
+    },
+    {
+      "tuple": "void-which-binds:approve?h=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "expect": "unknown_handle"
+    },
+    {
+      "tuple": "voidbind:approve?h=7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+      "expect": "unknown_handle"
+    },
+    {
+      "tuple": "void-which-binds:login?h=7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+      "expect": "unknown_handle"
+    },
+    {
+      "tuple": " void-which-binds:approve?h=7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+      "expect": "unknown_handle"
+    }
+  ]
+}

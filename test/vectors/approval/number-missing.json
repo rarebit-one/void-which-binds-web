@@ -1,0 +1,94 @@
+{
+  "name": "number-missing",
+  "description": "ADR-0019 vector 4: an assertion without a chosen number is malformed, as is one without a credential or signature.",
+  "keys": {
+    "M.D": {
+      "sign_seed": "45ce63fc45a3cbd3cb2ae191e8a75ff7cad8335604e1e3bf4a7445e5b6611fd5",
+      "id": "ed25519:9bd317735e6474cceb4aef2752ab33b9d21876e2b0f1382cf232c63c729a6dda"
+    }
+  },
+  "actions": [
+    {
+      "label": "deploy",
+      "kind": "deploy",
+      "resource": "do:team/ops",
+      "summary": "Deploy web v2026.10.03.1 to production",
+      "params": "7b22617070223a22776562222c22656e76223a2270726f64756374696f6e222c2276657273696f6e223a2276323032362e31302e30332e31227d",
+      "digest": "fa785dee23df52ccf226d5c6b2d66db6f40d8631f97c8bb4a33895fe613fed21"
+    }
+  ],
+  "challenges": [
+    {
+      "label": "c",
+      "action": "deploy",
+      "id": "c6e736e7b62631430edbf305c4113304",
+      "nonce": "34f792a2f9cbb416d823a638f08abc3dea420aa9e6bd67f044285d1cc9e0c9e0",
+      "audience": "https://broker.example",
+      "issued_at": 1791028800,
+      "expires_at": 1791028920,
+      "match_number": 42,
+      "candidates": [
+        17,
+        42,
+        86
+      ],
+      "action_digest": "fa785dee23df52ccf226d5c6b2d66db6f40d8631f97c8bb4a33895fe613fed21",
+      "resource": "do:team/ops",
+      "ttl": 60,
+      "preimage": "0000000000000026766f69642d77686963682d62696e64732f617070726f76616c2f6368616c6c656e67652f763100000000000000206336653733366537623632363331343330656462663330356334313133333034000000000000002034f792a2f9cbb416d823a638f08abc3dea420aa9e6bd67f044285d1cc9e0c9e0000000000000001668747470733a2f2f62726f6b65722e6578616d706c650000000000000008000000006ac0eeb80000000000000008000000000000002a0000000000000020fa785dee23df52ccf226d5c6b2d66db6f40d8631f97c8bb4a33895fe613fed21000000000000000b646f3a7465616d2f6f70730000000000000008000000000000003c",
+      "webauthn_challenge": "0f99be5b4f62a54843326ce2bd9bf0df7307c15028d6405f7b2d43e77d567f5b"
+    }
+  ],
+  "mints": [
+    {
+      "label": "sig",
+      "kind": "ed25519",
+      "signer": "M.D",
+      "body": "0000000000000026766f69642d77686963682d62696e64732f617070726f76616c2f6368616c6c656e67652f763100000000000000206336653733366537623632363331343330656462663330356334313133333034000000000000002034f792a2f9cbb416d823a638f08abc3dea420aa9e6bd67f044285d1cc9e0c9e0000000000000001668747470733a2f2f62726f6b65722e6578616d706c650000000000000008000000006ac0eeb80000000000000008000000000000002a0000000000000020fa785dee23df52ccf226d5c6b2d66db6f40d8631f97c8bb4a33895fe613fed21000000000000000b646f3a7465616d2f6f70730000000000000008000000000000003c",
+      "sig": "ko5A8TD2eOh9eUBnqMLbNKV7gYCU3VivT07Cv2yZDDvf4N1miyK2ys2lozF3ouvT5uYmMv9OLHpJNeef1NcOAw"
+    }
+  ],
+  "approvals": [
+    {
+      "label": "no-number",
+      "challenge": "c",
+      "action": "deploy",
+      "assertion": {
+        "credential": "credential-not-judged-at-the-byte-layer",
+        "sig": "ko5A8TD2eOh9eUBnqMLbNKV7gYCU3VivT07Cv2yZDDvf4N1miyK2ys2lozF3ouvT5uYmMv9OLHpJNeef1NcOAw"
+      },
+      "approver": "M.D",
+      "allow_synced": false,
+      "now": 1791028830,
+      "expect": "malformed"
+    },
+    {
+      "label": "no-credential",
+      "challenge": "c",
+      "action": "deploy",
+      "assertion": {
+        "credential": "",
+        "sig": "ko5A8TD2eOh9eUBnqMLbNKV7gYCU3VivT07Cv2yZDDvf4N1miyK2ys2lozF3ouvT5uYmMv9OLHpJNeef1NcOAw",
+        "match_number": 42
+      },
+      "approver": "M.D",
+      "allow_synced": false,
+      "now": 1791028830,
+      "expect": "malformed"
+    },
+    {
+      "label": "no-sig",
+      "challenge": "c",
+      "action": "deploy",
+      "assertion": {
+        "credential": "credential-not-judged-at-the-byte-layer",
+        "sig": "",
+        "match_number": 42
+      },
+      "approver": "M.D",
+      "allow_synced": false,
+      "now": 1791028830,
+      "expect": "malformed"
+    }
+  ]
+}

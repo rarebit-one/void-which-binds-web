@@ -1,0 +1,21 @@
+{
+  "name": "valid",
+  "description": "well-formed scopes (ADR-0017 \"Scope vocabulary\"): each validates, and Canonical returns it unchanged",
+  "scopes": [
+    "app:read",
+    "app:write",
+    "do:team/ops",
+    "do:team/ops/deploy",
+    "do:org/delete",
+    "a:0",
+    "x-1:y",
+    "ns-with-digits9:path.with_all-the/punct",
+    "app:0leading-digit",
+    "app:trailing/",
+    "app:a//b",
+    "app:a/../b",
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:p",
+    "a:pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp",
+    "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn:pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+  ]
+}

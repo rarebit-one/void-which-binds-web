@@ -72,6 +72,82 @@ await signIn({
 });
 ```
 
+## WebAuthn passkey signer (`./webauthn`, ADR-0018)
+
+`@rarebit-one/void-which-binds-web/webauthn` lets a browser sign with an
+ADR-0018 passkey member key (`webauthn:es256:<130 hex>`). It covers ADR-0017
+delegations to an agent, ADR-0019 action approvals and the approval inbox's
+authenticated fetch. It is the client half of void-which-binds-go's
+`identity`, `delegation` and `approval` packages, byte for byte. It uses
+WebCrypto only and has no runtime dependencies. The pure builders run in Node;
+only `getPasskeyAssertion` and `createPasskey` touch `navigator.credentials`.
+
+```js
+import {
+  delegationBody, delegationChallenge, assembleDelegationWebAuthn,
+  getPasskeyAssertion, createPasskey,
+} from '@rarebit-one/void-which-binds-web/webauthn';
+
+// Enrolment: a discoverable ES256 passkey with UV. Its member key is what moneta enrols.
+const { memberKey, credentialId, backupEligible } = await createPasskey({ rp, user, challenge });
+
+// Delegate to an agent (Go: Delegation.Body -> Challenge -> AssembleWebAuthn).
+const body = delegationBody({ usr, org, iss: memberKey, prn, aud, scp, jti, non, iat, exp });
+const { envelope } = await getPasskeyAssertion({
+  rpId: 'moneta.example', challenge: await delegationChallenge(body), allowCredentials: [credentialId],
+});
+const token = assembleDelegationWebAuthn(body, envelope);
+```
+
+Approvals follow the inbox flow: `parseApprove(tuple)`, then
+`fetchPasskeyChallenge(audience, handle, nonce)` and `fetchRequest(...)`, then
+`openFetchResponse(json)`. The person taps a number, and then
+`passkeyChallenge(challenge, action, chosen)` and
+`approvalAssertion(credential, chosen, envelope)`. `openFetchResponse` and
+`passkeyChallenge` refuse an action that doesn't recompute to the challenge's
+digest. That way the approver signs only what it displayed.
+
+| Export | Mirrors (void-which-binds-go v0.22.0) |
+|--------|----------------------------------------|
+| `webAuthnChallenge(domain, body)` | `identity.WebAuthnChallenge` |
+| `assembleEnvelope({authenticatorData, clientDataJSON, signature})` | the ADR-0018 envelope `{"ad","cd","sig"}` Go verifies |
+| `memberKeyFromSpki(spki)` / `formatWebAuthnES256(point)` / `parseMemberKey(s)` | `identity.FormatWebAuthnES256` / `ParseMemberKey` (crypto/ecdh point rule) |
+| `verifyMemberSignature(key, domain, body, sig, policy)` / `verifyWebAuthnEnvelope` | `MemberKey.VerifyBody` + `MemberKeyReason` (a client-side pre-flight; the broker is the authority) |
+| `delegationBody` / `delegationChallenge` / `assembleDelegationWebAuthn` / `parseDelegationBody` | `Delegation.Body` / `delegation.Challenge` / `AssembleWebAuthn` / `parseBody` |
+| `actionDigest` / `challengePreimage` / `passkeyChallenge` / `approvalAssertion` | `Action.Digest` / `Challenge.Preimage` / `PasskeyChallenge` / `WebAuthnAssertion` |
+| `fetchPreimage` / `fetchPasskeyChallenge` / `fetchRequest` / `openFetchResponse` | `FetchPreimage` / `FetchPasskeyChallenge` / `FetchRequest` / `FetchResponse.Open` |
+| `parseApprove` / `encodeApprove` / `parseHandle` / `parseFetchNonce` | the same names |
+| `getPasskeyAssertion` / `createPasskey` | the browser ceremony (UV `required`, ES256 only, `attestation: 'none'`) |
+
+Refusals throw `VoidWhichBindsError` whose `reason` is Go's word (`malformed`,
+`wrong_type`, `incomplete`, `issuer_mismatch`, `action_mismatch` with `detail`
+`digest_mismatch`/`resource_mismatch`, `unknown_handle`, …).
+
+The browser needs a secure context and WebCrypto. In Node, the pure functions
+need Node 19 or later, for global `crypto.subtle` and Ed25519. Registration
+needs `AuthenticatorAttestationResponse.getPublicKey()`. No CBOR is parsed, and
+a browser without that method is refused.
+
+**Not covered:**
+- Roster cosigs by passkey. In void-which-binds-go v0.22.0 a `webauthn:` roster
+  key is live but inert (ADR-0014). Only an Ed25519 key signs roster ops and
+  cosigs, so there is no passkey challenge to mirror yet.
+- The pre-enrolment proof of possession. Its ADR-0018 domain is not registered
+  yet.
+
+### Golden vectors
+
+`test/vectors/{webauthn,delegation,approval,scope}/` are verbatim copies of
+void-which-binds-go's `testvectors/vectors/`. They are copied at the commit
+pinned in `test/vectors/VOID_WHICH_BINDS_GO_REF` (v0.22.0). The suite replays
+them byte for byte: challenges, preimages, digests, bodies, envelopes, tokens,
+key renderings and refusal words.
+
+`npm run check:vectors` (CI job `vector-drift`) diffs the copies against
+upstream at the pin. It reads the private repo with `VOID_WHICH_BINDS_GO_TOKEN`
+(the org `AUTOLAND_PAT` in CI). Never hand-edit a vector. Instead, re-copy the
+directories and bump the pin in the same change.
+
 ## Install
 
 From the GitHub Packages npm registry (scope `@rarebit-one`):
@@ -142,7 +218,9 @@ Node 18+) and is injectable for testing.
 
 ## Design
 
-Framework-free and tiny by intent: no runtime dependencies, no build step. The
+Framework-free and tiny by intent: no runtime dependencies, no build step
+(the WebAuthn signer is plain ESM with JSDoc types that `tsc` checks without
+emitting). The
 QR encoder is the vendored `qrcode-generator` (MIT, Kazuhiko Arase) under
 `src/vendor/` — never a CDN, so a `.wgt` runs offline (ADR-0001 self-hosted
 policy). See [`DESIGN.md`](./DESIGN.md) for the why-a-separate-repo rationale and
@@ -151,8 +229,10 @@ the ADR-0006 contract this module speaks.
 ## Development
 
 ```
-npm ci       # no runtime deps; installs the (empty) locked tree
-npm test      # node --test — the CI merge gate
+npm ci                 # no runtime deps; installs the locked dev tree (typescript)
+npm run typecheck      # tsc over the WebAuthn signer's JSDoc types (no emit)
+npm test               # node --test — the CI merge gate
+npm run check:vectors  # diff test/vectors against void-which-binds-go at the pin
 ```
 
 ## License

@@ -1,0 +1,6 @@
+{
+  "name": "key-uppercase-hex",
+  "description": "the point in uppercase hex; ParseMemberKey refuses it",
+  "key": "webauthn:es256:04515C3D6EB9E396B904D3FECA7F54FDCD0CC1E997BF375DCA515AD0A6C3B4035F4536BE3A50F318FBF9A5475902A221502BEF0D57E08C53B2CC0A56F17D9F9354",
+  "expect": "malformed"
+}

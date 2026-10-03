@@ -1,0 +1,95 @@
+{
+  "name": "fetch-unparseable",
+  "description": "Byte-layer fetch refusals: a handle that is not 32 bytes of canonical unpadded base64url is unknown_handle; such a nonce is fetch_nonce_spent; a proof that is not base64url, or is under the wrong key, is bad_fetch_proof.",
+  "keys": {
+    "M.D": {
+      "sign_seed": "45ce63fc45a3cbd3cb2ae191e8a75ff7cad8335604e1e3bf4a7445e5b6611fd5",
+      "id": "ed25519:9bd317735e6474cceb4aef2752ab33b9d21876e2b0f1382cf232c63c729a6dda"
+    },
+    "O.D": {
+      "sign_seed": "01d563c9797bf9017c79b6471ef0ff0868a6d0aba7fb8d104680fbb2def37d41",
+      "id": "ed25519:5d86d9b47276535e988487450ad07eeea80c92068f4faab54b7ae83fb09c3d77"
+    }
+  },
+  "fetch_preimages": [
+    {
+      "label": "fp",
+      "audience": "https://broker.example",
+      "handle": "7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+      "nonce": "TVg7lprP7Jm6v0b3SBLCdm-Ovnm7WGln5IqsMnZJ7pA",
+      "preimage": "0000000000000022766f69642d77686963682d62696e64732f617070726f76616c2f66657463682f7631000000000000001668747470733a2f2f62726f6b65722e6578616d706c650000000000000020ed57c4307c3a9f32bc64e7089e19d61763e44562aa16986a921052277bda61db00000000000000204d583b969acfec99babf46f74812c2766f8ebe79bb586967e48aac327649ee90",
+      "webauthn_challenge": "1a6928f35bb73f9480d10b034ec321829672b82d83b3a831387be259d9e36577"
+    }
+  ],
+  "mints": [
+    {
+      "label": "proof",
+      "kind": "ed25519",
+      "signer": "M.D",
+      "body": "0000000000000022766f69642d77686963682d62696e64732f617070726f76616c2f66657463682f7631000000000000001668747470733a2f2f62726f6b65722e6578616d706c650000000000000020ed57c4307c3a9f32bc64e7089e19d61763e44562aa16986a921052277bda61db00000000000000204d583b969acfec99babf46f74812c2766f8ebe79bb586967e48aac327649ee90",
+      "sig": "ymqyD19SNDP6Hy4JZv6U9jEzy6_Rrr3zKuwS98ZZn0ftiKljol-myO4F6eOdGbJ2ymweo5uP1A4PrE1ihxmCDA"
+    }
+  ],
+  "fetches": [
+    {
+      "label": "handle-padded",
+      "request": {
+        "handle": "7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds=",
+        "nonce": "TVg7lprP7Jm6v0b3SBLCdm-Ovnm7WGln5IqsMnZJ7pA",
+        "credential": "credential-not-judged-at-the-byte-layer",
+        "proof": "ymqyD19SNDP6Hy4JZv6U9jEzy6_Rrr3zKuwS98ZZn0ftiKljol-myO4F6eOdGbJ2ymweo5uP1A4PrE1ihxmCDA"
+      },
+      "audience": "https://broker.example",
+      "fetcher": "M.D",
+      "allow_synced": false,
+      "nonce_issued_at": 1791028810,
+      "now": 1791028820,
+      "expect": "unknown_handle"
+    },
+    {
+      "label": "nonce-short",
+      "request": {
+        "handle": "7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+        "nonce": "TVg7lprP7Jm6v0b3SBLCdm-Ovnm7WGln5IqsMnZJ7p",
+        "credential": "credential-not-judged-at-the-byte-layer",
+        "proof": "ymqyD19SNDP6Hy4JZv6U9jEzy6_Rrr3zKuwS98ZZn0ftiKljol-myO4F6eOdGbJ2ymweo5uP1A4PrE1ihxmCDA"
+      },
+      "audience": "https://broker.example",
+      "fetcher": "M.D",
+      "allow_synced": false,
+      "nonce_issued_at": 1791028810,
+      "now": 1791028820,
+      "expect": "fetch_nonce_spent"
+    },
+    {
+      "label": "proof-not-base64url",
+      "request": {
+        "handle": "7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+        "nonce": "TVg7lprP7Jm6v0b3SBLCdm-Ovnm7WGln5IqsMnZJ7pA",
+        "credential": "credential-not-judged-at-the-byte-layer",
+        "proof": "ymqyD19SNDP6Hy4JZv6U9jEzy6_Rrr3zKuwS98ZZn0ftiKljol-myO4F6eOdGbJ2ymweo5uP1A4PrE1ihxmCDA!"
+      },
+      "audience": "https://broker.example",
+      "fetcher": "M.D",
+      "allow_synced": false,
+      "nonce_issued_at": 1791028810,
+      "now": 1791028820,
+      "expect": "bad_fetch_proof"
+    },
+    {
+      "label": "wrong-key",
+      "request": {
+        "handle": "7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+        "nonce": "TVg7lprP7Jm6v0b3SBLCdm-Ovnm7WGln5IqsMnZJ7pA",
+        "credential": "credential-not-judged-at-the-byte-layer",
+        "proof": "ymqyD19SNDP6Hy4JZv6U9jEzy6_Rrr3zKuwS98ZZn0ftiKljol-myO4F6eOdGbJ2ymweo5uP1A4PrE1ihxmCDA"
+      },
+      "audience": "https://broker.example",
+      "fetcher": "O.D",
+      "allow_synced": false,
+      "nonce_issued_at": 1791028810,
+      "now": 1791028820,
+      "expect": "bad_fetch_proof"
+    }
+  ]
+}

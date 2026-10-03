@@ -1,0 +1,92 @@
+{
+  "name": "action-digest-bytes",
+  "description": "ADR-0019 vector 2: fixed actions and their digests, including empty params and a non-ASCII summary, and the actions Check refuses (malformed).",
+  "keys": {
+    "M.D": {
+      "sign_seed": "45ce63fc45a3cbd3cb2ae191e8a75ff7cad8335604e1e3bf4a7445e5b6611fd5",
+      "id": "ed25519:9bd317735e6474cceb4aef2752ab33b9d21876e2b0f1382cf232c63c729a6dda"
+    }
+  },
+  "actions": [
+    {
+      "label": "deploy",
+      "kind": "deploy",
+      "resource": "do:team/ops",
+      "summary": "Deploy web v2026.10.03.1 to production",
+      "params": "7b22617070223a22776562222c22656e76223a2270726f64756374696f6e222c2276657273696f6e223a2276323032362e31302e30332e31227d",
+      "digest": "fa785dee23df52ccf226d5c6b2d66db6f40d8631f97c8bb4a33895fe613fed21"
+    },
+    {
+      "label": "empty-params",
+      "kind": "rotate-secret",
+      "resource": "app:secrets/db",
+      "summary": "Rotate the database password",
+      "params": "",
+      "digest": "8ebe6f92bec51696df50ca779429be90e0c37703c306c2142f11018402c6b46e"
+    },
+    {
+      "label": "non-ascii-summary",
+      "kind": "delete",
+      "resource": "do:team/ops",
+      "summary": "Supprimer l’équipe « ops » — 東京 🚀",
+      "params": "00ff01",
+      "digest": "5eff0ef23b92c1cf8511e8da05d8aa5e0a0540cf973eb07bb0a6460254315d08"
+    },
+    {
+      "label": "kind-uppercase",
+      "kind": "Deploy",
+      "resource": "do:team/ops",
+      "summary": "x",
+      "params": "",
+      "error": "malformed"
+    },
+    {
+      "label": "kind-empty",
+      "kind": "",
+      "resource": "do:team/ops",
+      "summary": "x",
+      "params": "",
+      "error": "malformed"
+    },
+    {
+      "label": "kind-leading-digit",
+      "kind": "1deploy",
+      "resource": "do:team/ops",
+      "summary": "x",
+      "params": "",
+      "error": "malformed"
+    },
+    {
+      "label": "resource-not-a-scope",
+      "kind": "deploy",
+      "resource": "do:Team/Ops",
+      "summary": "x",
+      "params": "",
+      "error": "malformed"
+    },
+    {
+      "label": "summary-empty",
+      "kind": "deploy",
+      "resource": "do:team/ops",
+      "summary": "",
+      "params": "",
+      "error": "malformed"
+    },
+    {
+      "label": "summary-newline",
+      "kind": "deploy",
+      "resource": "do:team/ops",
+      "summary": "Deploy\nprod",
+      "params": "",
+      "error": "malformed"
+    },
+    {
+      "label": "summary-bidi-override",
+      "kind": "deploy",
+      "resource": "do:team/ops",
+      "summary": "Deploy ‮atsd",
+      "params": "",
+      "error": "malformed"
+    }
+  ]
+}

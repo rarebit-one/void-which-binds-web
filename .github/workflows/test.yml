@@ -17,7 +17,9 @@ permissions:
 jobs:
   # The whole package is plain ESM Node — no build step. This job proves the
   # unit suite (the start -> poll -> token flow + the QR/Bearer/SSE helpers,
-  # mocking fetch) stays green, which is the merge gate. Node LTS on ubuntu.
+  # mocking fetch; the WebAuthn signer replaying the pinned void-which-binds-go
+  # vectors) stays green, and that the signer's JSDoc types check, which is the
+  # merge gate. Node LTS on ubuntu.
   test:
     runs-on: ubuntu-latest
     steps:
@@ -32,5 +34,44 @@ jobs:
       # exactly the lockfile and fails if package.json and the lock drift.
       - name: install
         run: npm ci --no-audit --no-fund
+      - name: typecheck
+        run: npm run typecheck
       - name: test
         run: npm test
+
+  # void-which-binds-go is the single source of truth for the protocol golden
+  # vectors (its `testvectors` package). The copies under test/vectors/ must match
+  # void-which-binds-go's testvectors/vectors/ byte-for-byte at the commit pinned
+  # in test/vectors/VOID_WHICH_BINDS_GO_REF, so a hand-edit or a stale copy fails
+  # here rather than letting the signer silently agree with itself. Plain git (no
+  # extra action to pin); void-which-binds-go is private. This repo is PUBLIC, so
+  # the read uses a ONE-HOUR, READ-ONLY installation token for that one repository
+  # (org release-bot App), never a broad PAT. Fork PRs get no secrets: the token
+  # step is skipped for them and the check is skipped with a warning.
+  vector-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - id: library-token
+        # Fork and Dependabot PRs get no Actions secrets: skip, and the check warns.
+        if: github.actor != 'dependabot[bot]' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ vars.RELEASE_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+          owner: rarebit-one
+          repositories: void-which-binds-go
+          permission-contents: read
+      - name: diff vectors against void-which-binds-go at the pinned ref
+        env:
+          VOID_WHICH_BINDS_GO_TOKEN: ${{ steps.library-token.outputs.token }}
+        run: |
+          if [ -z "$VOID_WHICH_BINDS_GO_TOKEN" ]; then
+            # Fork PRs get no secrets and cannot read the private void-which-binds-go;
+            # the check still runs on every same-repo PR and on push to main.
+            echo "::warning::no void-which-binds-go token (fork PR?); skipping the vector drift check"
+            exit 0
+          fi
+          scripts/check-vector-drift.sh
