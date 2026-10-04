@@ -57,4 +57,23 @@ export {
   parseHandle,
   passkeyChallenge,
 } from './approval.js';
-export { createPasskey, getPasskeyAssertion } from './browser.js';
+export {
+  DOMAIN_ENROL_PROOF,
+  ENROL_PROOF_MAX_TTL_SECONDS,
+  ENROL_PROOF_NONCE_LEN,
+  MANAGED_PREFIX,
+  checkEnrolProof,
+  enrolProofChallenge,
+  enrolProofPreimage,
+  isEnrollableKey,
+  isManagedId,
+  verifyEnrolProof,
+} from './enrolproof.js';
+export { createPasskey, getPasskeyAssertion, registrationOptions } from './browser.js';
+export {
+  ENROL_PATHS,
+  enrolWithInvite,
+  httpEnrolTransport,
+  parseEnrolInvite,
+  parseEnrolNonce,
+} from './enrol.js';

@@ -92,6 +92,71 @@ GET  {baseUrl}/login/{id}              -> { status: 'pending'|'approved'|'expire
   Pure builders are kept apart from the `navigator.credentials` wrapper so Node
   can test them. WebCrypto only, and no WebAuthn helper library: the wire
   is small and must match Go exactly.
+- **Enrolment ceremony (W2).** The same subpath runs the invitee's
+  enrolment (below). Its broker wire is proposed until moneta P5 M2.
+
+## Invite and enrolment (P5 W2)
+
+`enrolWithInvite` is the invitee's half of the P4–P7 plan's §3 "Invite and
+enrolment" steps 2–3 and of ADR-0018's "Enrolment proof" (amended 2026-10-04,
+Proposed). The proof's bytes (`enrolProofPreimage`, `enrolProofChallenge`)
+mirror void-which-binds-go `roster.EnrolProof` byte for byte and replay
+`enrol-proof/`. The broker's HTTP surface does not exist yet, so the wire
+below is a proposal.
+
+> **Proposed, to be fixed by moneta P5 M2.** These paths and bodies are this
+> library's proposal, not a contract. moneta's M2 (invite and enrol) fixes
+> them, and this section and `httpEnrolTransport` follow. A caller that needs
+> a different wire passes `transport: { begin, submitKey, submitProof }` and
+> keeps the ceremony.
+
+Every call is a `POST` of JSON to the broker's origin (the PWA's own, so the
+RP ID is moneta's host), with `credentials: 'same-origin'` and
+`cache: 'no-store'`. The link token rides in the body, never in a URL, so it
+stays out of access logs (the link itself should carry it in the fragment,
+e.g. `https://<moneta>/i#t=<token>`). Byte fields are unpadded base64url
+(canonical); times are whole Unix seconds.
+
+```
+POST /enrol/begin  { "invite": <token> }
+  200 { "rp": { "id", "name" },
+        "user": { "id": b64url(1..64 bytes), "name", "displayName" },
+        "challenge": b64url(>= 16 bytes),        registration only; no Go verifier sees it
+        "org": "ed25519:<64 hex>", "mem": "mp:<32 hex>" }
+
+POST /enrol/key    { "invite": <token>, "key": "webauthn:es256:<130 hex>" }
+  200 { "nonce": b64url(32 bytes), "iat": <s>, "exp": <s> }
+                                                 issued against this key; one live nonce per invite
+
+POST /enrol/proof  { "invite": <token>, "key": <the same key>, "sig": b64url(ADR-0018 envelope) }
+  200 <opaque JSON, returned to the caller as `result`>
+
+any non-2xx        { "error": "<snake_case word>" }  → VoidWhichBindsError(reason = word, detail = "http_<status>")
+```
+
+- **Why `begin`.** The proof binds `org` and `mem`, so the client must know
+  them before it can build `B`. ADR-0018 names only `{nonce, iat, exp}` for
+  the key response, so they come with the registration options. `user.id` is
+  the broker's choice; an opaque per-`mem` handle, not the email, is the
+  suggestion.
+- **`aud` is the caller's `origin`**, not a broker field: the client binds
+  the origin it is running on, and the broker rebuilds `B` from its own
+  configured origin. A mismatch fails at the broker as `challenge_mismatch`,
+  and already fails the client's pre-flight as `origin_not_allowed`.
+- **`/enrol/proof` repeats `key`** so the broker can refuse a proof for a key
+  whose nonce a retried `create` already revoked, without reading the
+  envelope. It never takes `B` or the window from the request.
+- **Fail closed, client side.** No key is posted unless `credProps.rk` is
+  `true` (ADR-0018: "`credProps.rk` absent or `false` → no add is submitted").
+  The nonce response must build a well-formed proof, so a window over 120 s,
+  a zero nonce or a sub-second time is refused before the second ceremony.
+  The assertion must come from the credential just created, and it must pass
+  `MemberKey.VerifyBody` under the candidate key for `origin` and the
+  invite's RP ID. That pre-flight admits synced passkeys (ADR-0018's default
+  for an `mp:` person). Whether a synced passkey is admitted, the window and
+  single use stay the broker's decision.
+- **No hidden network.** `enrolWithInvite` needs an explicit `fetch` (or a
+  `transport`) and never falls back to the ambient `fetch`.
 
 ## License
 
