@@ -1,0 +1,17 @@
+{
+  // Type-checks the WebAuthn signer's JSDoc types. The package ships plain ESM
+  // with no build step (DESIGN.md), so tsc only checks, never emits.
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022", "DOM"],
+    "types": [],
+    "skipLibCheck": true
+  },
+  "include": ["src/webauthn/**/*.js"]
+}

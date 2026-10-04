@@ -1,0 +1,6 @@
+{
+  "name": "key-identity-point",
+  "description": "04 followed by 64 zero bytes, the conventional stand-in for the point at infinity; ParseMemberKey refuses it",
+  "key": "webauthn:es256:0400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "expect": "malformed"
+}

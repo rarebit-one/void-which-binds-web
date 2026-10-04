@@ -1,0 +1,20 @@
+{
+  "name": "spec-16.6-authentication",
+  "description": "the authentication half of WebAuthn L3 §16.6 (ES256 Credential with very long credential ID), verbatim, verified against the spec's own challenge. Its flags are 0x0d (UP, UV, BE), so with synced passkeys allowed it passes steps 10–21 end to end",
+  "key": "webauthn:es256:043b8176b7504489cc593046d7988abb7905a742de6ac2cdc748a873c663e90cb11436d5edc9a75f23999eef9d5950a5c2455514ee1014084720f841a06b828a11",
+  "challenge": "ef1deba56dce48f674a447ccf63b9599258ce87648e5c396f2ef0ca1da460e3b",
+  "segment": "eyJhZCI6InY2dkRkREtWaXdZellOT3RaR0hKeEhOYTVfanQxR1dTcGVEd0ZGS3k1TFVOQUFBQUFBIiwiY2QiOiJleUowZVhCbElqb2lkMlZpWVhWMGFHNHVaMlYwSWl3aVkyaGhiR3hsYm1kbElqb2lOM2d6Y25CWE0wOVRVRm93Y0VWbVRUbHFkVlp0VTFkTk5raGFTVFZqVDFjNGRUaE5iMlJ3UjBScWN5SXNJbTl5YVdkcGJpSTZJbWgwZEhCek9pOHZaWGhoYlhCc1pTNXZjbWNpTENKamNtOXpjMDl5YVdkcGJpSTZabUZzYzJWOSIsInNpZyI6Ik1FVUNJRDdPLUQteEtneXVlRUVGWDUtSEVEcVpfUlMwSkJsTHZ3YkVZajAtNXVQOUFpRUEwcXpqUnRzbUt4TjBwcmNQcWxIMUdLUXQzS0U2UVNYT2IxQlNwMXVzbjdZIn0",
+  "policy": {
+    "rps": [
+      {
+        "rp_id": "example.org",
+        "origins": [
+          "https://example.org"
+        ]
+      }
+    ],
+    "allow_synced": true
+  },
+  "expect": "ok",
+  "signature_valid": true
+}

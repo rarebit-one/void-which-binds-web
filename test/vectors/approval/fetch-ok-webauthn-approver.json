@@ -1,0 +1,118 @@
+{
+  "name": "fetch-ok-webauthn-approver",
+  "description": "ADR-0019 vector 15: a passkey approver's fetch proof (an assertion over the DomainFetch challenge) verifies.",
+  "webauthn_rps": [
+    {
+      "rp_id": "broker.example",
+      "origins": [
+        "https://broker.example"
+      ]
+    }
+  ],
+  "keys": {
+    "M.D": {
+      "sign_seed": "45ce63fc45a3cbd3cb2ae191e8a75ff7cad8335604e1e3bf4a7445e5b6611fd5",
+      "id": "ed25519:9bd317735e6474cceb4aef2752ab33b9d21876e2b0f1382cf232c63c729a6dda"
+    },
+    "M.W": {
+      "p256_scalar": "e028391f0bf6e54d8bc4b75ad06d01869f7ae053361ac340498842c5360a0b06",
+      "id": "webauthn:es256:04c836c3b4e64ed0281123c5be4eb554b155044ae1b0ecc0342935e3c7fab73fc351c1ed5c89dc9c8ec2cb2de327923fe083fcbecb27c22b4b03b49de4792c9031"
+    }
+  },
+  "actions": [
+    {
+      "label": "deploy",
+      "kind": "deploy",
+      "resource": "do:team/ops",
+      "summary": "Deploy web v2026.10.03.1 to production",
+      "params": "7b22617070223a22776562222c22656e76223a2270726f64756374696f6e222c2276657273696f6e223a2276323032362e31302e30332e31227d",
+      "digest": "fa785dee23df52ccf226d5c6b2d66db6f40d8631f97c8bb4a33895fe613fed21"
+    }
+  ],
+  "challenges": [
+    {
+      "label": "c",
+      "action": "deploy",
+      "id": "c6e736e7b62631430edbf305c4113304",
+      "nonce": "34f792a2f9cbb416d823a638f08abc3dea420aa9e6bd67f044285d1cc9e0c9e0",
+      "audience": "https://broker.example",
+      "issued_at": 1791028800,
+      "expires_at": 1791028920,
+      "match_number": 42,
+      "candidates": [
+        17,
+        42,
+        86
+      ],
+      "action_digest": "fa785dee23df52ccf226d5c6b2d66db6f40d8631f97c8bb4a33895fe613fed21",
+      "resource": "do:team/ops",
+      "ttl": 600,
+      "preimage": "0000000000000026766f69642d77686963682d62696e64732f617070726f76616c2f6368616c6c656e67652f763100000000000000206336653733366537623632363331343330656462663330356334313133333034000000000000002034f792a2f9cbb416d823a638f08abc3dea420aa9e6bd67f044285d1cc9e0c9e0000000000000001668747470733a2f2f62726f6b65722e6578616d706c650000000000000008000000006ac0eeb80000000000000008000000000000002a0000000000000020fa785dee23df52ccf226d5c6b2d66db6f40d8631f97c8bb4a33895fe613fed21000000000000000b646f3a7465616d2f6f707300000000000000080000000000000258",
+      "webauthn_challenge": "876f914693d63626c89d3c96f847e89cd56359e21e1eb4a2987d7cc43ab25fed"
+    }
+  ],
+  "fetch_preimages": [
+    {
+      "label": "fp",
+      "audience": "https://broker.example",
+      "handle": "7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+      "nonce": "TVg7lprP7Jm6v0b3SBLCdm-Ovnm7WGln5IqsMnZJ7pA",
+      "preimage": "0000000000000022766f69642d77686963682d62696e64732f617070726f76616c2f66657463682f7631000000000000001668747470733a2f2f62726f6b65722e6578616d706c650000000000000020ed57c4307c3a9f32bc64e7089e19d61763e44562aa16986a921052277bda61db00000000000000204d583b969acfec99babf46f74812c2766f8ebe79bb586967e48aac327649ee90",
+      "webauthn_challenge": "1a6928f35bb73f9480d10b034ec321829672b82d83b3a831387be259d9e36577"
+    }
+  ],
+  "mints": [
+    {
+      "label": "proof",
+      "kind": "webauthn",
+      "signer": "M.W",
+      "domain": "void-which-binds/approval/fetch/v1",
+      "body": "0000000000000022766f69642d77686963682d62696e64732f617070726f76616c2f66657463682f7631000000000000001668747470733a2f2f62726f6b65722e6578616d706c650000000000000020ed57c4307c3a9f32bc64e7089e19d61763e44562aa16986a921052277bda61db00000000000000204d583b969acfec99babf46f74812c2766f8ebe79bb586967e48aac327649ee90",
+      "sig": "eyJhZCI6ImU1ZXpiTmQ3YzdpQ2lpejN3T29kanlMZXVpNWpzUG16M0lQSlc4UXJZTmtGQUFBQUFBIiwiY2QiOiJleUowZVhCbElqb2lkMlZpWVhWMGFHNHVaMlYwSWl3aVkyaGhiR3hsYm1kbElqb2lSMjFyYnpneGRUTlFOVk5CTUZGelJGUnpUV2huY0ZwNWRVTXlSSE0yWjNoUFNIWnBWMlJ1YWxwWVl5SXNJbTl5YVdkcGJpSTZJbWgwZEhCek9pOHZZbkp2YTJWeUxtVjRZVzF3YkdVaUxDSmpjbTl6YzA5eWFXZHBiaUk2Wm1Gc2MyVjkiLCJzaWciOiJNRVFDSUdnQmpzenhydW1jWlVadDdVVGFxa09LRnJkZ3I4T0ttZEtqTVVmVDE1M0ZBaUFsT2YzTmxwaVNiTlJ4SDhsamdDS1phWTdUU2E4aUlPT0xFX2FsZjV2ME5nIn0"
+    }
+  ],
+  "fetches": [
+    {
+      "label": "fetch",
+      "request": {
+        "handle": "7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+        "nonce": "TVg7lprP7Jm6v0b3SBLCdm-Ovnm7WGln5IqsMnZJ7pA",
+        "credential": "credential-not-judged-at-the-byte-layer",
+        "proof": "eyJhZCI6ImU1ZXpiTmQ3YzdpQ2lpejN3T29kanlMZXVpNWpzUG16M0lQSlc4UXJZTmtGQUFBQUFBIiwiY2QiOiJleUowZVhCbElqb2lkMlZpWVhWMGFHNHVaMlYwSWl3aVkyaGhiR3hsYm1kbElqb2lSMjFyYnpneGRUTlFOVk5CTUZGelJGUnpUV2huY0ZwNWRVTXlSSE0yWjNoUFNIWnBWMlJ1YWxwWVl5SXNJbTl5YVdkcGJpSTZJbWgwZEhCek9pOHZZbkp2YTJWeUxtVjRZVzF3YkdVaUxDSmpjbTl6YzA5eWFXZHBiaUk2Wm1Gc2MyVjkiLCJzaWciOiJNRVFDSUdnQmpzenhydW1jWlVadDdVVGFxa09LRnJkZ3I4T0ttZEtqTVVmVDE1M0ZBaUFsT2YzTmxwaVNiTlJ4SDhsamdDS1phWTdUU2E4aUlPT0xFX2FsZjV2ME5nIn0"
+      },
+      "audience": "https://broker.example",
+      "fetcher": "M.W",
+      "allow_synced": false,
+      "nonce_issued_at": 1791028810,
+      "now": 1791028820,
+      "expect": "ok",
+      "response": {
+        "challenge": {
+          "id": "c6e736e7b62631430edbf305c4113304",
+          "nonce": "NPeSovnLtBbYI6Y48Iq8PepCCqnmvWfwRChdHMngyeA",
+          "audience": "https://broker.example",
+          "issued_at": 1791028800,
+          "expires_at": 1791028920,
+          "candidates": [
+            17,
+            42,
+            86
+          ],
+          "action_digest": "-nhd7iPfUszyJtXGstZttvQNhjH5fIu0oziV_mE_7SE",
+          "resource": "do:team/ops",
+          "ttl": 600
+        },
+        "action": {
+          "kind": "deploy",
+          "resource": "do:team/ops",
+          "summary": "Deploy web v2026.10.03.1 to production",
+          "params": "eyJhcHAiOiJ3ZWIiLCJlbnYiOiJwcm9kdWN0aW9uIiwidmVyc2lvbiI6InYyMDI2LjEwLjAzLjEifQ"
+        }
+      },
+      "response_of": {
+        "challenge": "c",
+        "action": "deploy"
+      }
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "name": "fetch-unauthenticated",
+  "description": "ADR-0019 vector 15: a fetch with no proof, or no credential, is fetch_unauthenticated.",
+  "keys": {
+    "M.D": {
+      "sign_seed": "45ce63fc45a3cbd3cb2ae191e8a75ff7cad8335604e1e3bf4a7445e5b6611fd5",
+      "id": "ed25519:9bd317735e6474cceb4aef2752ab33b9d21876e2b0f1382cf232c63c729a6dda"
+    }
+  },
+  "fetch_preimages": [
+    {
+      "label": "fp",
+      "audience": "https://broker.example",
+      "handle": "7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+      "nonce": "TVg7lprP7Jm6v0b3SBLCdm-Ovnm7WGln5IqsMnZJ7pA",
+      "preimage": "0000000000000022766f69642d77686963682d62696e64732f617070726f76616c2f66657463682f7631000000000000001668747470733a2f2f62726f6b65722e6578616d706c650000000000000020ed57c4307c3a9f32bc64e7089e19d61763e44562aa16986a921052277bda61db00000000000000204d583b969acfec99babf46f74812c2766f8ebe79bb586967e48aac327649ee90",
+      "webauthn_challenge": "1a6928f35bb73f9480d10b034ec321829672b82d83b3a831387be259d9e36577"
+    }
+  ],
+  "mints": [
+    {
+      "label": "proof",
+      "kind": "ed25519",
+      "signer": "M.D",
+      "body": "0000000000000022766f69642d77686963682d62696e64732f617070726f76616c2f66657463682f7631000000000000001668747470733a2f2f62726f6b65722e6578616d706c650000000000000020ed57c4307c3a9f32bc64e7089e19d61763e44562aa16986a921052277bda61db00000000000000204d583b969acfec99babf46f74812c2766f8ebe79bb586967e48aac327649ee90",
+      "sig": "ymqyD19SNDP6Hy4JZv6U9jEzy6_Rrr3zKuwS98ZZn0ftiKljol-myO4F6eOdGbJ2ymweo5uP1A4PrE1ihxmCDA"
+    }
+  ],
+  "fetches": [
+    {
+      "label": "no-proof",
+      "request": {
+        "handle": "7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+        "nonce": "TVg7lprP7Jm6v0b3SBLCdm-Ovnm7WGln5IqsMnZJ7pA",
+        "credential": "credential-not-judged-at-the-byte-layer",
+        "proof": ""
+      },
+      "audience": "https://broker.example",
+      "fetcher": "M.D",
+      "allow_synced": false,
+      "nonce_issued_at": 1791028810,
+      "now": 1791028820,
+      "expect": "fetch_unauthenticated"
+    },
+    {
+      "label": "no-credential",
+      "request": {
+        "handle": "7VfEMHw6nzK8ZOcInhnWF2PkRWKqFphqkhBSJ3vaYds",
+        "nonce": "TVg7lprP7Jm6v0b3SBLCdm-Ovnm7WGln5IqsMnZJ7pA",
+        "credential": "",
+        "proof": "ymqyD19SNDP6Hy4JZv6U9jEzy6_Rrr3zKuwS98ZZn0ftiKljol-myO4F6eOdGbJ2ymweo5uP1A4PrE1ihxmCDA"
+      },
+      "audience": "https://broker.example",
+      "fetcher": "M.D",
+      "allow_synced": false,
+      "nonce_issued_at": 1791028810,
+      "now": 1791028820,
+      "expect": "fetch_unauthenticated"
+    }
+  ]
+}

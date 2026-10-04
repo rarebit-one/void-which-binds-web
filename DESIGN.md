@@ -84,6 +84,14 @@ GET  {baseUrl}/login/{id}              -> { status: 'pending'|'approved'|'expire
   `src/vendor/` — self-hosted, never a CDN (ADR-0001), so a `.wgt` runs offline.
 - **RP-agnostic.** `baseUrl` is injected; no allthing- or heyarr-specific code
   lives here.
+- **WebAuthn signer (`./webauthn`, P4–P7 plan milestone W1).** A separate
+  subpath, so QR-only consumers never load it. It mirrors void-which-binds-go's
+  ADR-0018 member keys and the passkey paths of ADR-0017 (delegation) and
+  ADR-0019 (approval and fetch) byte for byte. Golden vectors are copied from
+  void-which-binds-go at a pinned commit, and CI diffs them against upstream.
+  Pure builders are kept apart from the `navigator.credentials` wrapper so Node
+  can test them. WebCrypto only, and no WebAuthn helper library: the wire
+  is small and must match Go exactly.
 
 ## License
 

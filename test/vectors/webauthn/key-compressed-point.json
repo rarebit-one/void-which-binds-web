@@ -1,0 +1,6 @@
+{
+  "name": "key-compressed-point",
+  "description": "the SEC1 compressed form (33 bytes); ParseMemberKey refuses it",
+  "key": "webauthn:es256:02515c3d6eb9e396b904d3feca7f54fdcd0cc1e997bf375dca515ad0a6c3b4035f",
+  "expect": "malformed"
+}

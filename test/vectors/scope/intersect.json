@@ -1,0 +1,144 @@
+{
+  "name": "intersect",
+  "description": "the intersection rule (ADR-0017 \"The intersection rule at the broker\", ADR-0019 step 6): byte-for-byte membership in every set, no wildcards, no implication",
+  "cases": [
+    {
+      "why": "delegation ∩ policy(org, role) ∩ served",
+      "sets": [
+        [
+          "app:read",
+          "do:team/ops"
+        ],
+        [
+          "app:read",
+          "app:write",
+          "do:team/ops"
+        ],
+        [
+          "app:read",
+          "do:team/ops",
+          "do:team/dev"
+        ]
+      ],
+      "result": [
+        "app:read",
+        "do:team/ops"
+      ],
+      "allowed": {
+        "app:read": true,
+        "app:write": false,
+        "do:team/dev": false,
+        "do:team/ops": true
+      }
+    },
+    {
+      "why": "no hierarchy: do:team/ops does not imply do:team/ops/deploy, nor the reverse",
+      "sets": [
+        [
+          "do:team/ops"
+        ],
+        [
+          "do:team/ops/deploy"
+        ]
+      ],
+      "result": [],
+      "allowed": {
+        "do:team/ops": false,
+        "do:team/ops/deploy": false
+      }
+    },
+    {
+      "why": "no verb implication: app:write does not imply app:read",
+      "sets": [
+        [
+          "app:write"
+        ],
+        [
+          "app:read",
+          "app:write"
+        ]
+      ],
+      "result": [
+        "app:write"
+      ],
+      "allowed": {
+        "app:read": false,
+        "app:write": true
+      }
+    },
+    {
+      "why": "a demoted role's policy narrows an outstanding delegation",
+      "sets": [
+        [
+          "app:read",
+          "do:team/ops"
+        ],
+        [
+          "app:read"
+        ]
+      ],
+      "result": [
+        "app:read"
+      ],
+      "allowed": {
+        "app:read": true,
+        "do:team/ops": false
+      }
+    },
+    {
+      "why": "a wildcard or uppercase policy entry grants nothing",
+      "sets": [
+        [
+          "app:*",
+          "APP:read",
+          "app:read"
+        ],
+        [
+          "app:*",
+          "APP:read",
+          "app:read"
+        ]
+      ],
+      "result": [
+        "app:read"
+      ],
+      "allowed": {
+        "APP:read": false,
+        "app:*": false,
+        "app:read": true,
+        "app:write": false
+      }
+    },
+    {
+      "why": "an empty policy (role maps to nothing) allows nothing",
+      "sets": [
+        [
+          "app:read"
+        ],
+        []
+      ],
+      "result": [],
+      "allowed": {
+        "app:read": false
+      }
+    },
+    {
+      "why": "a single set (ADR-0019: c.Resource ∈ policy(org, role)), unsorted with a duplicate",
+      "sets": [
+        [
+          "do:team/ops",
+          "app:read",
+          "do:team/ops"
+        ]
+      ],
+      "result": [
+        "app:read",
+        "do:team/ops"
+      ],
+      "allowed": {
+        "do:org/delete": false,
+        "do:team/ops": true
+      }
+    }
+  ]
+}
