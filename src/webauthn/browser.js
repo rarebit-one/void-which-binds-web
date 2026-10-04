@@ -132,11 +132,47 @@ function checkClientData(clientDataJSON, type, challenge) {
  * @property {boolean | null} backupEligible the BE flag (a synced passkey), when
  *   the browser exposes getAuthenticatorData(); ADR-0018 admits a synced
  *   passkey only for an org-managed person
+ * @property {boolean | null} discoverable the credProps extension's `rk`: true
+ *   only when the browser reports a discoverable (resident) credential, null
+ *   when it reports nothing. The enrolment ceremony submits no key unless it
+ *   is true (ADR-0018, "Enrolment proof")
  */
 
 /**
- * Registers a discoverable ES256 passkey with user verification required and
- * returns its ADR-0018 member key (memberKeyFromSpki over getPublicKey()).
+ * The PublicKeyCredentialCreationOptions ADR-0018 registers with: a
+ * discoverable credential (residentKey "required"), userVerification
+ * "required", ES256 (COSE -7) only, attestation "none", and the credProps
+ * extension so the browser reports whether the credential is discoverable.
+ * Pure, so a test can pin the exact options.
+ *
+ * @param {object} o
+ * @param {{ id: string, name: string }} o.rp
+ * @param {{ id: ArrayBuffer | ArrayBufferView, name: string, displayName: string }} o.user
+ * @param {Uint8Array} o.challenge
+ * @param {Array<ArrayBuffer | ArrayBufferView | { id: ArrayBuffer | ArrayBufferView, transports?: string[] }>} [o.excludeCredentials]
+ * @param {number} [o.timeout]
+ * @returns {any}
+ */
+export function registrationOptions(o) {
+  /** @type {any} */
+  const publicKey = {
+    rp: { id: o.rp.id, name: o.rp.name },
+    user: { id: toBytes(o.user.id), name: o.user.name, displayName: o.user.displayName },
+    challenge: toBytes(o.challenge),
+    pubKeyCredParams: [{ type: 'public-key', alg: COSE_ALG_ES256 }],
+    authenticatorSelection: { residentKey: 'required', requireResidentKey: true, userVerification: 'required' },
+    attestation: 'none',
+    excludeCredentials: (o.excludeCredentials ?? []).map(descriptor),
+    extensions: { credProps: true },
+  };
+  if (o.timeout !== undefined) publicKey.timeout = o.timeout;
+  return publicKey;
+}
+
+/**
+ * Registers a discoverable ES256 passkey with user verification required
+ * (registrationOptions) and returns its ADR-0018 member key (memberKeyFromSpki
+ * over getPublicKey()). A credential that is not ES256 or not P-256 is refused.
  * The challenge and user handle come from the server (an opaque registration
  * challenge); attestation is not requested.
  *
@@ -152,18 +188,7 @@ function checkClientData(clientDataJSON, type, challenge) {
  */
 export async function createPasskey(o) {
   /** @type {any} */
-  const publicKey = {
-    rp: { id: o.rp.id, name: o.rp.name },
-    user: { id: toBytes(o.user.id), name: o.user.name, displayName: o.user.displayName },
-    challenge: toBytes(o.challenge),
-    pubKeyCredParams: [{ type: 'public-key', alg: COSE_ALG_ES256 }],
-    authenticatorSelection: { residentKey: 'required', requireResidentKey: true, userVerification: 'required' },
-    attestation: 'none',
-    excludeCredentials: (o.excludeCredentials ?? []).map(descriptor),
-  };
-  if (o.timeout !== undefined) publicKey.timeout = o.timeout;
-  /** @type {any} */
-  const req = { publicKey };
+  const req = { publicKey: registrationOptions(o) };
   if (o.signal) req.signal = o.signal;
   const cred = await container(o.credentials).create(req);
   if (!cred || cred.type !== 'public-key' || !cred.response) {
@@ -185,6 +210,12 @@ export async function createPasskey(o) {
     const ad = toBytes(r.getAuthenticatorData());
     if (ad.length >= 33) backupEligible = (ad[32] & 0x08) !== 0;
   }
+  let discoverable = null;
+  if (typeof cred.getClientExtensionResults === 'function') {
+    const ext = cred.getClientExtensionResults();
+    const rk = ext && ext.credProps ? ext.credProps.rk : undefined;
+    if (typeof rk === 'boolean') discoverable = rk;
+  }
   return {
     memberKey: memberKeyFromSpki(spki),
     credentialId: toBytes(cred.rawId),
@@ -193,5 +224,6 @@ export async function createPasskey(o) {
     attestationObject: toBytes(r.attestationObject),
     transports: typeof r.getTransports === 'function' ? [...r.getTransports()] : [],
     backupEligible,
+    discoverable,
   };
 }

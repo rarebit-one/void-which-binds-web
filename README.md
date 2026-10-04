@@ -76,9 +76,11 @@ await signIn({
 
 `@rarebit-one/void-which-binds-web/webauthn` lets a browser sign with an
 ADR-0018 passkey member key (`webauthn:es256:<130 hex>`). It covers ADR-0017
-delegations to an agent, ADR-0019 action approvals and the approval inbox's
-authenticated fetch. It is the client half of void-which-binds-go's
-`identity`, `delegation` and `approval` packages, byte for byte. It uses
+delegations to an agent, ADR-0019 action approvals, the approval inbox's
+authenticated fetch, and the invitee's half of the P5 invite and enrolment
+ceremony (ADR-0018's enrolment proof). It is the client half of
+void-which-binds-go's `identity`, `delegation`, `approval` and `roster`
+(enrol proof) packages, byte for byte. It uses
 WebCrypto only and has no runtime dependencies. The pure builders run in Node;
 only `getPasskeyAssertion` and `createPasskey` touch `navigator.credentials`.
 
@@ -107,7 +109,35 @@ Approvals follow the inbox flow: `parseApprove(tuple)`, then
 `passkeyChallenge` refuse an action that doesn't recompute to the challenge's
 digest. That way the approver signs only what it displayed.
 
-| Export | Mirrors (void-which-binds-go v0.22.0) |
+### Invite and enrolment (P5 W2)
+
+An invitee opens the single-use link and the PWA runs one call:
+
+```js
+import { enrolWithInvite } from '@rarebit-one/void-which-binds-web/webauthn';
+
+const { memberKey, result } = await enrolWithInvite({
+  origin: location.origin,            // the broker's origin: the proof's audience
+  inviteToken,                        // from the link (a bearer secret)
+  fetch: window.fetch.bind(window),   // required: nothing reaches the network on its own
+  onStatus: ({ phase }) => show(phase),
+});
+```
+
+It runs `begin` (the invite's registration options and `{org, mem}`), then
+`create` (a discoverable, UV-required ES256 passkey with `credProps`) and SPKI
+→ `webauthn:es256:`. It posts the key with the link token and gets back the
+broker's `{nonce, iat, exp}`. Then it runs `get` over
+`EnrolProof.PasskeyChallenge` (`allowCredentials` = the new credential, UV
+required) and posts the ADR-0018 envelope. It fails closed: no key is posted
+unless `credProps.rk` is true (`not_discoverable`); a nonce response that
+doesn't build a well-formed proof is `malformed`; and the assertion is
+pre-flighted under the candidate key (`credential_mismatch`, or ADR-0018's
+word) before it is posted. The broker's HTTP shapes are **proposed, to be
+fixed by moneta P5 M2** (see [`DESIGN.md`](./DESIGN.md#invite-and-enrolment-p5-w2)).
+Pass `transport: { begin, submitKey, submitProof }` to speak another wire.
+
+| Export | Mirrors (void-which-binds-go v0.22.0; enrol proof at main `4c2517b`) |
 |--------|----------------------------------------|
 | `webAuthnChallenge(domain, body)` | `identity.WebAuthnChallenge` |
 | `assembleEnvelope({authenticatorData, clientDataJSON, signature})` | the ADR-0018 envelope `{"ad","cd","sig"}` Go verifies |
@@ -117,11 +147,16 @@ digest. That way the approver signs only what it displayed.
 | `actionDigest` / `challengePreimage` / `passkeyChallenge` / `approvalAssertion` | `Action.Digest` / `Challenge.Preimage` / `PasskeyChallenge` / `WebAuthnAssertion` |
 | `fetchPreimage` / `fetchPasskeyChallenge` / `fetchRequest` / `openFetchResponse` | `FetchPreimage` / `FetchPasskeyChallenge` / `FetchRequest` / `FetchResponse.Open` |
 | `parseApprove` / `encodeApprove` / `parseHandle` / `parseFetchNonce` | the same names |
-| `getPasskeyAssertion` / `createPasskey` | the browser ceremony (UV `required`, ES256 only, `attestation: 'none'`) |
+| `enrolProofPreimage` / `enrolProofChallenge` / `verifyEnrolProof` / `checkEnrolProof` | `EnrolProof.Preimage` / `PasskeyChallenge` / `VerifyEnrolProof` + `EnrolProofReason` / `check` (`roster`, ADR-0018 enrolment proof) |
+| `getPasskeyAssertion` / `createPasskey` / `registrationOptions` | the browser ceremony (UV `required`, ES256 only, `attestation: 'none'`; registration discoverable with `credProps`) |
+| `enrolWithInvite` / `httpEnrolTransport` / `parseEnrolInvite` / `parseEnrolNonce` | the invitee's enrolment ceremony and its proposed wire (no Go peer; moneta P5 M2 fixes the wire) |
 
 Refusals throw `VoidWhichBindsError` whose `reason` is Go's word (`malformed`,
 `wrong_type`, `incomplete`, `issuer_mismatch`, `action_mismatch` with `detail`
-`digest_mismatch`/`resource_mismatch`, `unknown_handle`, …).
+`digest_mismatch`/`resource_mismatch`, `unknown_handle`, `expired`, …). The
+enrolment ceremony adds three client-side words with no Go sentinel:
+`not_discoverable`, `credential_mismatch` and `enrol_refused` (a broker refusal
+without a word; `detail` is `http_<status>`).
 
 The browser needs a secure context and WebCrypto. In Node, the pure functions
 need Node 19 or later, for global `crypto.subtle` and Ed25519. Registration
@@ -132,16 +167,17 @@ a browser without that method is refused.
 - Roster cosigs by passkey. In void-which-binds-go v0.22.0 a `webauthn:` roster
   key is live but inert (ADR-0014). Only an Ed25519 key signs roster ops and
   cosigs, so there is no passkey challenge to mirror yet.
-- The pre-enrolment proof of possession. Its ADR-0018 domain is not registered
-  yet.
+- The broker side of enrolment: single use, one live nonce per invite, and
+  drafting `set` + `enrol` are moneta's.
 
 ### Golden vectors
 
-`test/vectors/{webauthn,delegation,approval,scope}/` are verbatim copies of
-void-which-binds-go's `testvectors/vectors/`. They are copied at the commit
-pinned in `test/vectors/VOID_WHICH_BINDS_GO_REF` (v0.22.0). The suite replays
+`test/vectors/{webauthn,delegation,approval,scope,enrol-proof}/` are verbatim
+copies of void-which-binds-go's `testvectors/vectors/`. They are copied at the
+commit pinned in `test/vectors/VOID_WHICH_BINDS_GO_REF` (main `4c2517b`, after
+v0.23.0; the next library release carries it). The suite replays
 them byte for byte: challenges, preimages, digests, bodies, envelopes, tokens,
-key renderings and refusal words.
+key renderings, enrol-proof preimages and refusal words.
 
 `npm run check:vectors` (CI job `vector-drift`) diffs the copies against
 upstream at the pin. It reads the private repo with `VOID_WHICH_BINDS_GO_TOKEN`

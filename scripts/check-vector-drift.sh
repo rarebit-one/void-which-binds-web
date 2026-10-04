@@ -6,10 +6,10 @@
 # void-which-binds-go is the single source of truth for Void-Which-Binds protocol
 # vectors (its `testvectors` package); this repo carries a verbatim copy of the
 # directories the WebAuthn signer replays (webauthn/, delegation/, approval/,
-# scope/). Each copied directory must equal upstream's byte for byte, README
-# included; directories this repo does not use are not copied. Never edit a
-# copied vector here: re-copy it from void-which-binds-go and bump the pin in the
-# same change. (Mirrors void-which-binds-kmp's scripts/check-vector-drift.sh.)
+# scope/, enrol-proof/). Each copied directory must equal upstream's byte for
+# byte, README included; directories this repo does not use are not copied.
+# Never edit a copied vector here: re-copy it from void-which-binds-go and bump
+# the pin in the same change. (Mirrors void-which-binds-kmp's scripts/check-vector-drift.sh.)
 #
 # Env:
 #   VOID_WHICH_BINDS_GO_TOKEN  token that can read the (private) void-which-binds-go
