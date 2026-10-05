@@ -1,5 +1,5 @@
 // The ADR-0018 enrolment proof of possession (amended 2026-10-04, "Enrolment
-// proof"): a port of void-which-binds-go roster/enrolproof.go (main 4c2517b),
+// proof"): a port of void-which-binds-go roster/enrolproof.go (v0.24.0),
 // byte layer only. The broker owns single use (one live nonce per invite,
 // consumed with the invite); none of that state lives here.
 //

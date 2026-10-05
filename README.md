@@ -137,7 +137,7 @@ word) before it is posted. The broker's HTTP shapes are **proposed, to be
 fixed by moneta P5 M2** (see [`DESIGN.md`](./DESIGN.md#invite-and-enrolment-p5-w2)).
 Pass `transport: { begin, submitKey, submitProof }` to speak another wire.
 
-| Export | Mirrors (void-which-binds-go v0.22.0; enrol proof at main `4c2517b`) |
+| Export | Mirrors (void-which-binds-go v0.22.0; enrol proof v0.24.0) |
 |--------|----------------------------------------|
 | `webAuthnChallenge(domain, body)` | `identity.WebAuthnChallenge` |
 | `assembleEnvelope({authenticatorData, clientDataJSON, signature})` | the ADR-0018 envelope `{"ad","cd","sig"}` Go verifies |
@@ -174,8 +174,8 @@ a browser without that method is refused.
 
 `test/vectors/{webauthn,delegation,approval,scope,enrol-proof}/` are verbatim
 copies of void-which-binds-go's `testvectors/vectors/`. They are copied at the
-commit pinned in `test/vectors/VOID_WHICH_BINDS_GO_REF` (main `4c2517b`, after
-v0.23.0; the next library release carries it). The suite replays
+commit pinned in `test/vectors/VOID_WHICH_BINDS_GO_REF` (the signed tag
+v0.24.0, `3f97570`). The suite replays
 them byte for byte: challenges, preimages, digests, bodies, envelopes, tokens,
 key renderings, enrol-proof preimages and refusal words.
 
