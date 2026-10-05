@@ -1,8 +1,6 @@
-# void-which-binds-go commit whose testvectors/vectors/ the directories here
-# are copied from, verbatim: webauthn/, delegation/, approval/, scope/ and
-# enrol-proof/. A main commit (feat: oidc and secevent packages, #139), not a
-# tag yet: the next library release (after v0.23.0) will carry it. Checked by
-# scripts/check-vector-drift.sh (CI job vector-drift). Never hand-edit a copied
-# vector: re-copy it from void-which-binds-go and bump this pin in the same
-# change.
-4c2517b783982e6a56781ab03bd4dcdfebfe74f7
+# void-which-binds-go commit (tag v0.24.0) whose testvectors/vectors/ the
+# directories here are copied from, verbatim: webauthn/, delegation/,
+# approval/, scope/ and enrol-proof/. Checked by scripts/check-vector-drift.sh
+# (CI job vector-drift). Never hand-edit a copied vector: re-copy it from
+# void-which-binds-go and bump this pin in the same change.
+3f9757003adcf70cbc1f7e2cea1e697f76106a2c
