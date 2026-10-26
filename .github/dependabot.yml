@@ -1,0 +1,29 @@
+version: 2
+updates:
+  # npm dependencies (repo root).
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 3
+      semver-major-days: 7
+    open-pull-requests-limit: 5
+    # Collapse routine minor/patch bumps into a single PR to cut review noise;
+    # major bumps still come as individual PRs.
+    groups:
+      minor-patch:
+        update-types: [minor, patch]
+
+  # GitHub Actions used by the workflows in .github/workflows.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 3
+      semver-major-days: 7
+    open-pull-requests-limit: 5
+    groups:
+      actions-all:
+        update-types: [minor, patch]
