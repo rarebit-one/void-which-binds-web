@@ -2,7 +2,7 @@
 //
 // A dependency-light, framework-agnostic ESM module that speaks the ADR-0006
 // `weblogin.Broker` wire contract: a browser starts a login, shows a
-// `voidbind:login?rp=<origin>&id=<login-id>` QR, an enrolled device (the
+// `void-which-binds:login?rp=<origin>&id=<login-id>` QR, an enrolled device (the
 // voidbind-kmp phone app, or the `void-which-binds login-approve` CLI stand-in) scans
 // and approves, and the browser polls until it holds a short-lived session
 // token. The token is carried as `Authorization: Bearer <token>` on fetch and
@@ -137,7 +137,7 @@ export function sseUrl(baseUrl, path, token) {
 // --- login flow -------------------------------------------------------------
 
 // Start a web login: POST {baseUrl}/login. Resolves with the login id and the
-// QR payload (the `voidbind:login?rp=&id=` tuple to render/scan).
+// QR payload (the `void-which-binds:login?rp=&id=` tuple to render/scan).
 //
 // `numberMatch: true` requests a void-which-binds-go ADR-0006 v2 number-matching login
 // (`POST /login?mode=number-match`). The broker then also returns the true match

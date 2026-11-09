@@ -11,10 +11,11 @@ It is a tidy extraction of All Thing's hand-rolled `web/signin.html` +
 per-RP code.
 
 > **Renamed (ADR-0013 R1).** This package was `@rarebit-one/voidbind-web`, in the
-> repo `rarebit-one/voidbind-web` (the old URL redirects). R1 renames packaging
-> only and changes no runtime string: the `voidbind:login` QR scheme is gen1 wire
-> and stays until gen2, and the error messages and the QR's `aria-label` are
-> unchanged ([void-which-binds-go ADR-0013](https://github.com/rarebit-one/void-which-binds-go/blob/main/docs/adr/0013-gen2-rename-to-void-which-binds-and-re-genesis.md)).
+> repo `rarebit-one/voidbind-web` (the old URL redirects). R1 renamed packaging
+> only. Since the gen2 cutover (ADR-0022) the broker mints the
+> `void-which-binds:login` QR scheme; this client only displays what the broker
+> returns, so it needed no change for that. The error messages and the QR's
+> `aria-label` are unchanged ([void-which-binds-go ADR-0013](https://github.com/rarebit-one/void-which-binds-go/blob/main/docs/adr/0013-gen2-rename-to-void-which-binds-and-re-genesis.md)).
 
 ## The Void-Which-Binds three-repo topology
 
@@ -34,7 +35,7 @@ instead of re-implementing the flow.
 ## The protocol (ADR-0006)
 
 1. The browser `POST`s `{baseUrl}/login`; the broker returns `{ id, qr }`, a login
-   id and a `voidbind:login?rp=<origin>&id=<login-id>` QR payload.
+   id and a `void-which-binds:login?rp=<origin>&id=<login-id>` QR payload.
 2. The page renders that as a QR. An enrolled device (the voidbind-kmp phone app,
    or the `void-which-binds login-approve` CLI stand-in) scans and approves it.
 3. The browser polls `GET {baseUrl}/login/{id}` (`{ status, token?, user? }`,
@@ -186,7 +187,14 @@ directories and bump the pin in the same change.
 
 ## Install
 
-From the GitHub Packages npm registry (scope `@rarebit-one`):
+Pin a signed release tag from git. This is how the Tizen consumers depend on it:
+
+```
+npm install "git+https://github.com/rarebit-one/void-which-binds-web.git#v0.2.0"
+```
+
+Or, once the registry is available, from the GitHub Packages npm registry
+(scope `@rarebit-one`):
 
 ```
 # .npmrc

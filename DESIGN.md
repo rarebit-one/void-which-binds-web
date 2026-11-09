@@ -43,7 +43,7 @@ GET  {baseUrl}/login/{id}              -> { status: 'pending'|'approved'|'expire
                                           (404 once the broker no longer knows the login)
 ```
 
-- `qr` is the `voidbind:login?rp=<origin>&id=<login-id>` payload the broker mints
+- `qr` is the `void-which-binds:login?rp=<origin>&id=<login-id>` payload the broker mints
   (byte-identical to void-which-binds-go's `weblogin.EncodeLogin`); the client only
   displays it — it never constructs the tuple.
 - On `approved`, the poll response carries the short-lived **session token** and
